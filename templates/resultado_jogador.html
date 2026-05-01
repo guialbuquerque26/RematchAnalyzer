@@ -1,0 +1,1680 @@
+{% extends "base.html" %}
+
+{% block title %}{{ player_info.display_name }} - Análise{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Player Header -->
+    <div class="player-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="player-name">{{ player_info.display_name }}</h1>
+                <div class="player-info">
+                    <span class="info-item">Level {{ player_info.level }}</span>
+                    <span class="info-item">{{ player_info.title }}</span>
+                    {% if atuacao %}
+                    <span class="info-item focus-{{ atuacao.lower() }}">
+                        {% if atuacao.lower() == 'geral' %}🎯 Análise Geral
+                        {% elif atuacao.lower() == 'ofensiva' %}⚔️ Foco Ofensivo
+                        {% else %}🛡️ Foco Defensivo
+                        {% endif %}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <!-- Scraping Data -->
+                {% if scraping_data and scraping_data.status == 'success' %}
+                <div class="scraping-badges">
+                    {% if scraping_data.player_info.grade %}
+                    <div class="scraping-badge grade-only">
+                        <span class="badge-value">{{ scraping_data.player_info.grade }}</span>
+                    </div>
+                    {% endif %}
+                    {% if scraping_data.player_info.rank %}
+                    <div class="scraping-badge">
+                        <span class="badge-label">Rank</span>
+                        <span class="badge-value">{{ scraping_data.player_info.rank }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ resumo.total_partidas }}</div>
+            <div class="stat-label">Partidas</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ "%.1f"|format(resumo.taxa_vitoria_geral) }}%</div>
+            <div class="stat-label">Taxa de Vitória</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ resumo.total_gols }}</div>
+            <div class="stat-label">Gols</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ resumo.total_assist }}</div>
+            <div class="stat-label">Assistências</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ resumo.total_mvps }}</div>
+            <div class="stat-label">MVPs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ "%.1f"|format(resumo.acuracia_geral) }}%</div>
+            <div class="stat-label">Acuracidade</div>
+        </div>
+    </div>
+
+    <!-- Layout de Duas Colunas: Gráficos + IA -->
+    <div class="main-content-grid">
+        <!-- Seção de Gráficos -->
+        <div class="charts-section">
+            <!-- Playing Style Chart -->
+            {% if scraping_data and scraping_data.status == 'success' and scraping_data.playing_style_analysis %}
+            <div class="chart-card">
+                <div class="chart-header playing-style-chart-header">
+                    <i class="fas fa-chart-radar"></i>
+                    <h4>Estilo de Jogo</h4>
+                </div>
+                <div class="chart-container playing-style-container">
+                    <canvas id="playingStyleChart" width="400" height="250"></canvas>
+                    <div class="playing-style-quality" id="styleQuality">
+                        Calculando...
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Performance Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <i class="fas fa-chart-pie"></i>
+                    <h4>Distribuição de Performance</h4>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart" width="400" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Análise da IA -->
+        {% if analise_ia %}
+        <div class="analysis-section">
+            <div class="section-header">
+                <i class="fas fa-robot"></i>
+                <h3>Análise da IA Gemini</h3>
+            </div>
+            <div class="analysis-content">
+                <div class="analysis-scroll">
+                    {{ analise_ia|formatar_analise|safe }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Performance por Modo - Redesigned -->
+    <div class="performance-modes-section">
+        <div class="section-title">
+            <i class="fas fa-gamepad"></i>
+            <h4>Performance por Modo de Jogo</h4>
+            <div class="title-decoration"></div>
+        </div>
+        
+        <div class="modes-container">
+        {% for modo, dados in metricas.items() %}
+            <div class="mode-card">
+                <!-- Mode Header -->
+                <div class="mode-title-bar">
+                    <div class="mode-name">
+                        <span class="mode-icon">🎮</span>
+                        <h5>{{ modo }}</h5>
+                    </div>
+                    <div class="mode-badge">{{ dados.partidas }} partidas</div>
+                </div>
+                
+                <!-- Performance Metrics Grid -->
+                <div class="performance-grid">
+                    <div class="metric-box primary-metric">
+                        <div class="metric-icon">🏆</div>
+                        <div class="metric-content">
+                            <div class="metric-value">{{ "%.1f"|format(dados.taxa_vitoria) }}%</div>
+                            <div class="metric-label">Win Rate</div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-box secondary-metric">
+                        <div class="metric-icon">🎯</div>
+                        <div class="metric-content">
+                            <div class="metric-value">{{ "%.1f"|format(dados.acuracidade) }}%</div>
+                            <div class="metric-label">Acuracidade</div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-box secondary-metric">
+                        <div class="metric-icon">⚽</div>
+                        <div class="metric-content">
+                            <div class="metric-value">{{ "%.2f"|format(dados.participacao_gols) }}</div>
+                            <div class="metric-label">Gols/Partida</div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-box secondary-metric">
+                        <div class="metric-icon">🎖️</div>
+                        <div class="metric-content">
+                            <div class="metric-value">{{ "%.2f"|format(dados.mvps_por_partida) }}</div>
+                            <div class="metric-label">MVPs/Partida</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <a href="{{ url_for('index') }}" class="btn btn-outline">
+            <i class="fas fa-arrow-left me-2"></i>Voltar
+        </a>
+        <a href="{{ url_for('duelo') }}" class="btn btn-primary">
+            <i class="fas fa-vs me-2"></i>Criar Duelo
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    .player-header {
+        background: rgba(22, 33, 62, 0.9);
+        backdrop-filter: blur(15px);
+        border-radius: 16px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 
+            var(--shadow-active),
+            0 0 30px rgba(123, 104, 238, 0.3);
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .player-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--color-gold), var(--color-primary), var(--color-success), var(--color-gold));
+    }
+    
+    .player-name {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--color-gray-900);
+        margin: 0 0 1rem 0;
+        letter-spacing: -0.025em;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .player-info {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .info-item {
+        background: rgba(26, 26, 46, 0.8);
+        color: var(--color-gray-700);
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+    
+    .info-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-default);
+        border-color: var(--color-gold);
+    }
+    
+    .focus-geral { 
+        background: rgba(0, 255, 136, 0.2) !important; 
+        color: var(--color-success) !important; 
+        border-color: var(--color-success) !important;
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+    }
+    .focus-ofensiva { 
+        background: rgba(255, 71, 87, 0.2) !important; 
+        color: var(--color-danger) !important; 
+        border-color: var(--color-danger) !important;
+        box-shadow: 0 0 15px rgba(255, 71, 87, 0.2);
+    }
+    .focus-defensiva { 
+        background: rgba(123, 104, 238, 0.2) !important; 
+        color: var(--color-primary) !important; 
+        border-color: var(--color-primary) !important;
+        box-shadow: 0 0 15px rgba(123, 104, 238, 0.2);
+    }
+    
+    .scraping-badges {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+    
+    .scraping-badge {
+        text-align: center;
+        background: rgba(26, 26, 46, 0.9);
+        border-radius: 12px;
+        padding: 1rem;
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        transition: all 0.3s ease;
+        min-width: 80px;
+    }
+    
+    .scraping-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-default);
+        border-color: var(--color-gold);
+        background: rgba(22, 33, 62, 0.9);
+    }
+    
+    .scraping-badge.grade-only {
+        background: rgba(255, 215, 0, 0.15);
+        border: 2px solid var(--color-gold);
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        min-width: 70px;
+        padding: 0.75rem;
+    }
+    
+    .scraping-badge.grade-only:hover {
+        background: rgba(255, 215, 0, 0.25);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+    }
+    
+    .scraping-badge.grade-only .badge-value {
+        font-size: 1.75rem;
+        margin: 0;
+    }
+    
+    .badge-label {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--color-gray-600);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 500;
+    }
+    
+    .badge-value {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-gold);
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: rgba(22, 33, 62, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 
+            var(--shadow-default),
+            0 0 15px rgba(123, 104, 238, 0.2);
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--color-gold), var(--color-primary));
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 
+            var(--shadow-active),
+            0 0 25px rgba(123, 104, 238, 0.3),
+            0 0 40px rgba(218, 165, 32, 0.2);
+        border-color: var(--color-gold);
+        background: rgba(26, 26, 46, 0.9);
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--color-gold);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--color-gray-700);
+        margin-top: 0.5rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .main-content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        align-items: start;
+    }
+    
+    .charts-section {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .chart-card {
+        background: rgba(22, 33, 62, 0.9);
+        backdrop-filter: blur(15px);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 
+            var(--shadow-default),
+            0 0 20px rgba(123, 104, 238, 0.2);
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        height: fit-content;
+        position: relative;
+        overflow: hidden;
+        min-height: 350px;
+    }
+    
+    .chart-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--color-gold), var(--color-primary));
+    }
+    
+    .chart-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 
+            var(--shadow-active),
+            0 0 25px rgba(123, 104, 238, 0.3);
+        border-color: var(--color-gold);
+    }
+    
+    .chart-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid rgba(123, 104, 238, 0.3);
+    }
+    
+    .chart-header i {
+        font-size: 1.25rem;
+        color: var(--color-gold);
+        margin-right: 0.75rem;
+        text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+    }
+    
+    .chart-header h4 {
+        margin: 0;
+        color: var(--color-gray-900);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .chart-container canvas {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto !important;
+        height: auto !important;
+    }
+    
+    /* CSS Específico para Playing Style Chart */
+    #playingStyleChart {
+        filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4)) 
+                drop-shadow(0 0 25px rgba(123, 104, 238, 0.3));
+        transition: all 0.3s ease;
+    }
+    
+    #playingStyleChart:hover {
+        filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.6)) 
+                drop-shadow(0 0 35px rgba(123, 104, 238, 0.5))
+                drop-shadow(0 0 50px rgba(0, 255, 136, 0.3));
+        transform: scale(1.02);
+    }
+    
+    /* Container específico do Playing Style */
+    .playing-style-container {
+        position: relative;
+        background: radial-gradient(ellipse at center,
+            rgba(255, 215, 0, 0.05) 0%,
+            rgba(123, 104, 238, 0.05) 50%,
+            rgba(22, 33, 62, 0.1) 100%);
+        border-radius: 12px;
+        padding: 1rem;
+        overflow: hidden;
+        height: 250px;
+    }
+    
+    .playing-style-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg,
+            transparent 0%,
+            rgba(255, 215, 0, 0.05) 25%,
+            rgba(123, 104, 238, 0.05) 50%,
+            rgba(0, 255, 136, 0.05) 75%,
+            transparent 100%);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .playing-style-container:hover::before {
+        opacity: 1;
+        animation: rainbow-flow 2s ease-in-out infinite;
+    }
+    
+    @keyframes rainbow-flow {
+        0% {
+            background: linear-gradient(45deg,
+                rgba(255, 215, 0, 0.1) 0%,
+                rgba(123, 104, 238, 0.1) 50%,
+                rgba(0, 255, 136, 0.1) 100%);
+        }
+        33% {
+            background: linear-gradient(45deg,
+                rgba(0, 255, 136, 0.1) 0%,
+                rgba(255, 215, 0, 0.1) 50%,
+                rgba(123, 104, 238, 0.1) 100%);
+        }
+        66% {
+            background: linear-gradient(45deg,
+                rgba(123, 104, 238, 0.1) 0%,
+                rgba(0, 255, 136, 0.1) 50%,
+                rgba(255, 215, 0, 0.1) 100%);
+        }
+        100% {
+            background: linear-gradient(45deg,
+                rgba(255, 215, 0, 0.1) 0%,
+                rgba(123, 104, 238, 0.1) 50%,
+                rgba(0, 255, 136, 0.1) 100%);
+        }
+    }
+    
+    /* Efeito de brilho nos pontos do radar */
+    .playing-style-container::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 8px;
+        height: 8px;
+        background: var(--color-gold);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 
+            0 0 10px rgba(255, 215, 0, 0.8),
+            0 0 20px rgba(255, 215, 0, 0.6),
+            0 0 30px rgba(255, 215, 0, 0.4);
+        animation: pulse-center 3s ease-in-out infinite;
+        pointer-events: none;
+    }
+    
+    @keyframes pulse-center {
+        0%, 100% {
+            opacity: 0.6;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        50% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+    }
+    
+    /* Efeito especial no header do Playing Style */
+    .playing-style-chart-header {
+        background: linear-gradient(135deg,
+            rgba(255, 215, 0, 0.1) 0%,
+            rgba(123, 104, 238, 0.1) 50%,
+            rgba(0, 255, 136, 0.1) 100%);
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .playing-style-chart-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 215, 0, 0.2) 50%,
+            transparent 100%);
+        transition: left 0.6s ease;
+    }
+    
+    .chart-card:hover .playing-style-chart-header::before {
+        left: 100%;
+    }
+    
+    /* Indicador de qualidade baseado na média */
+    .playing-style-quality {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background: rgba(13, 17, 23, 0.9);
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        border: 1px solid var(--color-gold);
+        color: var(--color-gold);
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+        opacity: 0;
+        animation: slideIn 1s ease 0.5s forwards;
+        z-index: 10;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .analysis-section {
+        background: rgba(22, 33, 62, 0.9);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 
+            var(--shadow-default),
+            0 0 20px rgba(123, 104, 238, 0.2);
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        position: relative;
+        overflow: hidden;
+        height: fit-content;
+        min-height: 350px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .analysis-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--color-gold), var(--color-primary));
+    }
+    
+    .section-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid rgba(123, 104, 238, 0.3);
+    }
+    
+    .section-header i {
+        font-size: 1.25rem;
+        color: var(--color-gold);
+        margin-right: 0.75rem;
+        text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+    }
+    
+    .section-header h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--color-gray-900);
+        margin: 0;
+    }
+    
+    .analysis-content {
+        height: 100%;
+    }
+    
+    .analysis-scroll {
+        max-height: 600px;
+        overflow-y: auto;
+        padding-right: 1rem;
+        margin-right: -1rem;
+        color: var(--color-gray-700);
+        line-height: 1.7;
+        font-size: 1rem;
+    }
+    
+    .analysis-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .analysis-scroll::-webkit-scrollbar-track {
+        background: var(--color-gray-200);
+        border-radius: 3px;
+    }
+    
+    .analysis-scroll::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, var(--color-primary), var(--color-gold));
+        border-radius: 3px;
+        box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+    }
+    
+    .analysis-scroll::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, var(--color-gold), var(--color-success));
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    
+    .secao-titulo {
+        background: var(--color-primary);
+        color: white;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        margin: 1.5rem 0 1rem 0;
+        font-size: 1rem;
+        display: inline-block;
+        box-shadow: 0 0 15px rgba(123, 104, 238, 0.3);
+    }
+    
+    /* Performance por Modo - Novo Design */
+    .performance-modes-section {
+        background: rgba(22, 33, 62, 0.9);
+        backdrop-filter: blur(15px);
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 
+            var(--shadow-default),
+            0 0 20px rgba(123, 104, 238, 0.2);
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .performance-modes-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, 
+            var(--color-success) 0%, 
+            var(--color-primary) 50%, 
+            var(--color-gold) 100%);
+    }
+    
+    .performance-modes-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 
+            var(--shadow-active),
+            0 0 25px rgba(123, 104, 238, 0.3);
+        border-color: var(--color-gold);
+    }
+    
+    .section-title {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(123, 104, 238, 0.3);
+        position: relative;
+    }
+    
+    .section-title i {
+        font-size: 1.5rem;
+        color: var(--color-gold);
+        margin-right: 1rem;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    
+    .section-title h4 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--color-gold);
+        margin: 0;
+        flex-grow: 1;
+    }
+    
+    .title-decoration {
+        width: 50px;
+        height: 2px;
+        background: linear-gradient(90deg, var(--color-gold), var(--color-primary));
+        border-radius: 1px;
+    }
+    
+    .modes-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 2rem;
+    }
+    
+    .mode-card {
+        background: rgba(26, 26, 46, 0.8);
+        border-radius: 12px;
+        border: 2px solid rgba(123, 104, 238, 0.3);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(5px);
+        height: auto;
+    }
+    
+    .mode-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--color-success), var(--color-primary));
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .mode-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .mode-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 
+            var(--shadow-active),
+            0 0 25px rgba(123, 104, 238, 0.3),
+            0 0 40px rgba(218, 165, 32, 0.2);
+        border-color: var(--color-gold);
+        background: rgba(22, 33, 62, 0.9);
+    }
+    
+    .mode-title-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 1.5rem 1rem;
+        border-bottom: 1px solid rgba(123, 104, 238, 0.3);
+    }
+    
+    .mode-name {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .mode-icon {
+        font-size: 1.25rem;
+        opacity: 0.8;
+    }
+    
+    .mode-name h5 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--color-gold);
+        margin: 0;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    
+    .mode-badge {
+        background: rgba(13, 17, 23, 0.9);
+        color: var(--color-gray-600);
+        padding: 0.375rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+    
+    .performance-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+    
+    .metric-box {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: rgba(13, 17, 23, 0.9);
+        border-radius: 10px;
+        padding: 1.25rem;
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        transition: all 0.3s ease;
+        min-height: 70px;
+    }
+    
+    .metric-box:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 
+            var(--shadow-default),
+            0 0 15px rgba(255, 215, 0, 0.2);
+        border-color: var(--color-gold);
+        background: rgba(22, 33, 62, 0.9);
+    }
+    
+    .primary-metric {
+        grid-column: 1 / -1;
+        background: rgba(22, 33, 62, 0.9);
+        border-color: var(--color-gold);
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+    }
+    
+    .primary-metric:hover {
+        box-shadow: 
+            var(--shadow-active),
+            0 0 20px rgba(255, 215, 0, 0.4);
+    }
+    
+    .metric-icon {
+        font-size: 1.5rem;
+        opacity: 0.8;
+        min-width: 24px;
+        text-align: center;
+    }
+    
+    .metric-content {
+        flex-grow: 1;
+    }
+    
+    .metric-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--color-gold);
+        line-height: 1;
+        margin-bottom: 0.25rem;
+        text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+    }
+    
+    .primary-metric .metric-value {
+        font-size: 1.5rem;
+        text-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+    }
+    
+    .metric-label {
+        font-size: 0.75rem;
+        color: var(--color-gray-700);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        line-height: 1;
+    }
+    
+    .navigation {
+        display: flex;
+        justify-content: space-between;
+        padding: 2rem 0;
+        margin-top: 2rem;
+        border-top: 2px solid rgba(123, 104, 238, 0.3);
+    }
+    
+    .btn {
+        border-radius: 10px;
+        padding: 0.875rem 1.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.975rem;
+        letter-spacing: 0.025em;
+        margin: 0 0.5rem;
+    }
+    
+    .btn-outline {
+        background: rgba(22, 33, 62, 0.8);
+        color: var(--color-gray-700);
+        border: 2px solid var(--color-gray-400);
+        box-shadow: var(--shadow-default);
+    }
+    
+    .btn-outline:hover {
+        background: var(--color-gray-400);
+        color: var(--color-dark-bg);
+        transform: translateY(-2px);
+        box-shadow: 
+            var(--shadow-active),
+            0 0 20px rgba(83, 52, 131, 0.4);
+        border-color: var(--color-gray-400);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-purple-deep) 100%);
+        color: white;
+        border: 2px solid var(--color-primary);
+        box-shadow: 
+            var(--shadow-default),
+            0 0 15px rgba(123, 104, 238, 0.4);
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--color-gold-dark) 0%, var(--color-primary) 100%);
+        border-color: var(--color-gold);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 
+            var(--shadow-active),
+            0 0 25px rgba(218, 165, 32, 0.6);
+    }
+    
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 1rem;
+        }
+        
+        .player-header {
+            padding: 2rem 1.5rem;
+        }
+        
+        .player-name {
+            font-size: 2rem;
+        }
+        
+        .scraping-badges {
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .scraping-badge {
+            min-width: 70px;
+            padding: 0.75rem;
+        }
+        
+        .badge-value {
+            font-size: 1.25rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+        
+        .stat-card {
+            padding: 1.25rem;
+        }
+        
+        .stat-value {
+            font-size: 1.75rem;
+        }
+        
+        .main-content-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .charts-section {
+            gap: 1.5rem;
+        }
+        
+        .chart-card,
+        .analysis-section {
+            padding: 2rem;
+            min-height: 320px;
+        }
+        
+        .chart-container {
+            height: 220px;
+        }
+        
+        /* Mobile específico para Playing Style */
+        .playing-style-container {
+            height: 220px;
+        }
+        
+        .playing-style-quality {
+            top: 0.25rem;
+            right: 0.25rem;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.65rem;
+        }
+        
+        #playingStyleChart {
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3)) 
+                    drop-shadow(0 0 15px rgba(123, 104, 238, 0.2));
+        }
+        
+        /* Desabilitar animações complexas no mobile */
+        .playing-style-container::after {
+            display: none;
+        }
+        
+        .playing-style-container:hover::before {
+            animation: none;
+        }
+        
+        .analysis-scroll {
+            max-height: 400px;
+        }
+        
+        .performance-modes-section {
+            padding: 2rem 1.5rem;
+        }
+        
+        .section-title {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+        
+        .section-title h4 {
+            font-size: 1.25rem;
+        }
+        
+        .title-decoration {
+            width: 100px;
+            align-self: center;
+        }
+        
+        .modes-container {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .mode-title-bar {
+            padding: 1.25rem 1.25rem 1rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .mode-name h5 {
+            font-size: 1rem;
+        }
+        
+        .mode-badge {
+            align-self: flex-end;
+            font-size: 0.7rem;
+        }
+        
+        .performance-grid {
+            padding: 1.25rem;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .primary-metric {
+            grid-column: 1;
+        }
+        
+        .metric-box {
+            padding: 1rem;
+            min-height: 60px;
+        }
+        
+        .metric-icon {
+            font-size: 1.25rem;
+        }
+        
+        .metric-value {
+            font-size: 1.1rem;
+        }
+        
+        .primary-metric .metric-value {
+            font-size: 1.25rem;
+        }
+        
+        .metric-label {
+            font-size: 0.7rem;
+        }
+        
+        .navigation {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+            margin: 0;
+        }
+    }
+</style>
+
+<!-- Chart Data (hidden) -->
+<script type="application/json" id="chartData">
+{
+    "playingStyle": {
+        {% if scraping_data and scraping_data.status == 'success' and scraping_data.playing_style_analysis %}
+        "available": true,
+        "labels": [
+            {% for style, value in scraping_data.playing_style_analysis.items() %}
+                {% if value is not none %}"{{ style|title }}"{% if not loop.last %},{% endif %}{% endif %}
+            {% endfor %}
+        ],
+        "values": [
+            {% for style, value in scraping_data.playing_style_analysis.items() %}
+                {% if value is not none %}{{ value }}{% if not loop.last %},{% endif %}{% endif %}
+            {% endfor %}
+        ]
+        {% else %}
+        "available": false,
+        "labels": [],
+        "values": []
+        {% endif %}
+    },
+    "performance": {
+        "gols": {{ resumo.total_gols or 0 }},
+        "assistencias": {{ resumo.total_assist or 0 }},
+        "mvps": {{ resumo.total_mvps or 0 }},
+        "defesas": {{ resumo.total_acoes_defensivas or 0 }}
+    }
+}
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get chart data from JSON
+    const chartDataElement = document.getElementById('chartData');
+    let chartData = {};
+    
+    try {
+        chartData = JSON.parse(chartDataElement.textContent);
+    } catch (error) {
+        console.error('❌ Error parsing chart data:', error);
+        chartData = {
+            playingStyle: { available: false, labels: [], values: [] },
+            performance: { gols: 0, assistencias: 0, mvps: 0, defesas: 0 }
+        };
+    }
+
+    // Chart colors dark gaming theme
+    const chartColors = {
+        primary: '#7b68ee',        // Roxo vibrante
+        secondary: '#daa520',      // Dourado escuro
+        success: '#00ff88',        // Verde neon
+        warning: '#ffd700',        // Dourado brilhante
+        danger: '#ff4757',         // Vermelho neon
+        info: '#9d8df1',          // Roxo claro
+        background: 'rgba(123, 104, 238, 0.2)',
+        backgroundGold: 'rgba(255, 215, 0, 0.2)',
+        borderWidth: 2
+    };
+
+    // Common chart options dark gaming theme
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    padding: 15,
+                    usePointStyle: true,
+                    font: { 
+                        size: 12,
+                        family: 'Inter, sans-serif',
+                        weight: '500'
+                    },
+                    color: '#c9c3f0',  // Lavanda
+                    boxWidth: 12,
+                    boxHeight: 12
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(22, 33, 62, 0.95)',
+                titleColor: '#ffd700',
+                bodyColor: '#c9c3f0',
+                borderColor: '#7b68ee',
+                borderWidth: 1,
+                cornerRadius: 8,
+                padding: 12,
+                titleFont: { size: 14, weight: '600' },
+                bodyFont: { size: 12 }
+            }
+        }
+    };
+
+    // Initialize Playing Style Radar Chart
+    function initPlayingStyleChart() {
+        const chartElement = document.getElementById('playingStyleChart');
+        if (!chartElement) return;
+
+        try {
+            const playingStyleData = chartData.playingStyle;
+
+            // Only create chart if we have data
+            if (playingStyleData.available && playingStyleData.labels.length > 0) {
+                const ctx = chartElement.getContext('2d');
+                
+                const playingStyleChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: playingStyleData.labels,
+                        datasets: [{
+                            label: 'Estilo de Jogo',
+                            data: playingStyleData.values,
+                            backgroundColor: 'rgba(255, 215, 0, 0.15)',
+                            borderColor: '#ffd700',
+                            borderWidth: 4,
+                            pointBackgroundColor: '#ffd700',
+                            pointBorderColor: '#1a1a2e',
+                            pointBorderWidth: 4,
+                            pointRadius: 8,
+                            pointHoverRadius: 12,
+                            pointHoverBackgroundColor: '#ffd700',
+                            pointHoverBorderColor: '#00ff88',
+                            pointHoverBorderWidth: 4,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        ...commonOptions,
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 2000,
+                            easing: 'easeOutQuart'
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                ...commonOptions.plugins.tooltip,
+                                backgroundColor: 'rgba(13, 17, 23, 0.95)',
+                                titleColor: '#ffd700',
+                                bodyColor: '#c9c3f0',
+                                borderColor: '#ffd700',
+                                borderWidth: 2,
+                                cornerRadius: 12,
+                                padding: 15,
+                                titleFont: { size: 14, weight: '700' },
+                                bodyFont: { size: 13, weight: '500' },
+                                displayColors: false,
+                                callbacks: {
+                                    title: function(context) {
+                                        return `${context[0].label}`;
+                                    },
+                                    label: function(context) {
+                                        const value = context.parsed.r;
+                                        let level = '';
+                                        if (value >= 80) level = ' (Excepcional)';
+                                        else if (value >= 65) level = ' (Muito Bom)';
+                                        else if (value >= 50) level = ' (Bom)';
+                                        else if (value >= 35) level = ' (Regular)';
+                                        else level = ' (Em Desenvolvimento)';
+                                        
+                                        return `${value}/100${level}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100,
+                                min: 0,
+                                ticks: {
+                                    display: false,  // Esconder números da escala
+                                    stepSize: 20,
+                                    backdropColor: 'transparent'
+                                },
+                                grid: {
+                                    color: 'rgba(123, 104, 238, 0.4)',
+                                    lineWidth: 2
+                                },
+                                angleLines: {
+                                    color: 'rgba(123, 104, 238, 0.5)',
+                                    lineWidth: 2
+                                },
+                                pointLabels: {
+                                    color: '#ffd700',  // Dourado para os labels
+                                    font: {
+                                        size: 12,
+                                        family: 'Inter, sans-serif',
+                                        weight: '600'
+                                    },
+                                    padding: 15
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Calcular e exibir indicador de qualidade
+                const average = playingStyleData.values.reduce((a, b) => a + b, 0) / playingStyleData.values.length;
+                const qualityElement = document.getElementById('styleQuality');
+                
+                let qualityText = '';
+                let qualityColor = '';
+                
+                if (average >= 80) {
+                    qualityText = 'Excepcional';
+                    qualityColor = '#00ff88';
+                } else if (average >= 65) {
+                    qualityText = 'Muito Bom';
+                    qualityColor = '#ffd700';
+                } else if (average >= 50) {
+                    qualityText = 'Bom';
+                    qualityColor = '#7b68ee';
+                } else if (average >= 35) {
+                    qualityText = 'Regular';
+                    qualityColor = '#daa520';
+                } else {
+                    qualityText = 'Em Desenvolvimento';
+                    qualityColor = '#ff4757';
+                }
+                
+                qualityElement.textContent = `${qualityText} (${average.toFixed(1)})`;
+                qualityElement.style.borderColor = qualityColor;
+                qualityElement.style.color = qualityColor;
+                qualityElement.style.boxShadow = `0 0 10px ${qualityColor}40`;
+                
+                console.log('✅ Playing Style Chart initialized successfully');
+                console.log(`📊 Playing Style Quality: ${qualityText} (${average.toFixed(1)}/100)`);
+            } else {
+                // Show fallback message with dark theme
+                chartElement.parentElement.innerHTML = `
+                    <div class="chart-header">
+                        <i class="fas fa-chart-radar"></i>
+                        <h4>Estilo de Jogo</h4>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: center; height: 250px; color: var(--color-gray-600); font-style: italic; background: rgba(26, 26, 46, 0.5); border-radius: 12px; border: 2px dashed rgba(123, 104, 238, 0.3);">
+                        <div style="text-align: center;">
+                            <i class="fas fa-chart-line" style="font-size: 1.75rem; color: var(--color-gold); margin-bottom: 1rem; opacity: 0.6;"></i>
+                            <div style="font-size: 1rem;">Dados de estilo de jogo não disponíveis</div>
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('❌ Error creating Playing Style Chart:', error);
+            chartElement.parentElement.innerHTML = `
+                <div class="chart-header">
+                    <i class="fas fa-chart-radar"></i>
+                    <h4>Estilo de Jogo</h4>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: center; height: 250px; color: var(--color-danger); background: rgba(255, 71, 87, 0.1); border-radius: 12px; border: 2px dashed var(--color-danger);">
+                    <div style="text-align: center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 1.75rem; margin-bottom: 1rem;"></i>
+                        <div style="font-size: 1rem;">Erro ao carregar gráfico</div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // Initialize Performance Doughnut Chart
+    function initPerformanceChart() {
+        const chartElement = document.getElementById('performanceChart');
+        if (!chartElement) return;
+
+        try {
+            const performanceData = chartData.performance;
+
+            // Check if we have any meaningful data
+            const totalActions = Object.values(performanceData).reduce((a, b) => a + b, 0);
+            
+            if (totalActions > 0) {
+                const ctx = chartElement.getContext('2d');
+                
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Gols', 'Assistências', 'MVPs', 'Ações Defensivas'],
+                        datasets: [{
+                            data: [
+                                performanceData.gols,
+                                performanceData.assistencias, 
+                                performanceData.mvps,
+                                performanceData.defesas
+                            ],
+                            backgroundColor: [
+                                chartColors.danger,      // Vermelho neon para gols
+                                chartColors.success,     // Verde neon para assistências
+                                chartColors.warning,     // Dourado para MVPs
+                                chartColors.primary      // Roxo para ações defensivas
+                            ],
+                            borderColor: [
+                                '#1a1a2e',
+                                '#1a1a2e',
+                                '#1a1a2e',
+                                '#1a1a2e'
+                            ],
+                            borderWidth: 3,
+                            hoverOffset: 8,
+                            hoverBorderWidth: 4,
+                            hoverBorderColor: '#ffd700'
+                        }]
+                    },
+                    options: {
+                        ...commonOptions,
+                        cutout: '65%',
+                        plugins: {
+                            ...commonOptions.plugins,
+                            legend: {
+                                position: 'bottom',
+                                labels: { 
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    font: { 
+                                        size: 12,
+                                        family: 'Inter, sans-serif',
+                                        weight: '500'
+                                    },
+                                    color: '#c9c3f0',  // Lavanda
+                                    boxWidth: 12,
+                                    boxHeight: 12
+                                }
+                            },
+                            tooltip: {
+                                ...commonOptions.plugins.tooltip,
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                        return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                console.log('✅ Performance Chart initialized successfully');
+            } else {
+                // Show message for no data with dark theme
+                chartElement.parentElement.innerHTML = `
+                    <div class="chart-header">
+                        <i class="fas fa-chart-pie"></i>
+                        <h4>Distribuição de Performance</h4>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: center; height: 250px; color: var(--color-gray-600); font-style: italic; background: rgba(26, 26, 46, 0.5); border-radius: 12px; border: 2px dashed rgba(123, 104, 238, 0.3);">
+                        <div style="text-align: center;">
+                            <i class="fas fa-chart-pie" style="font-size: 1.75rem; color: var(--color-gold); margin-bottom: 1rem; opacity: 0.6;"></i>
+                            <div style="font-size: 1rem;">Nenhuma ação registrada ainda</div>
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('❌ Error creating Performance Chart:', error);
+            chartElement.parentElement.innerHTML = `
+                <div class="chart-header">
+                    <i class="fas fa-chart-pie"></i>
+                    <h4>Distribuição de Performance</h4>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: center; height: 250px; color: var(--color-danger); background: rgba(255, 71, 87, 0.1); border-radius: 12px; border: 2px dashed var(--color-danger);">
+                    <div style="text-align: center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 1.75rem; margin-bottom: 1rem;"></i>
+                        <div style="font-size: 1rem;">Erro ao carregar gráfico</div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // Initialize all charts
+    function initializeCharts() {
+        console.log('🎨 Initializing charts...');
+        
+        // Wait a bit to ensure elements are rendered
+        setTimeout(() => {
+            initPlayingStyleChart();
+            initPerformanceChart();
+        }, 100);
+    }
+
+    // Animate elements on load with dark gaming theme
+    function animateElements() {
+        console.log('🎨 Iniciando animações dark gaming...');
+        
+        // Animar player header
+        const playerHeader = document.querySelector('.player-header');
+        if (playerHeader) {
+            playerHeader.style.opacity = '0';
+            playerHeader.style.transform = 'translateY(-20px)';
+            
+            setTimeout(() => {
+                playerHeader.style.transition = 'all 1s cubic-bezier(0.16, 1, 0.3, 1)';
+                playerHeader.style.opacity = '1';
+                playerHeader.style.transform = 'translateY(0)';
+            }, 100);
+        }
+        
+        // Animar stat cards sequencialmente
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px) scale(0.95)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0) scale(1)';
+            }, 300 + (index * 80));
+        });
+        
+        // Animar seções principais
+        const mainSections = document.querySelectorAll('.chart-card, .analysis-section, .performance-modes-section');
+        mainSections.forEach((section, index) => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(40px)';
+            
+            setTimeout(() => {
+                section.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                section.style.opacity = '1';
+                section.style.transform = 'translateY(0)';
+            }, 800 + (index * 200));
+        });
+        
+        // Animar mode cards individualmente
+        setTimeout(() => {
+            const modeCards = document.querySelectorAll('.mode-card');
+            modeCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px) scale(0.95)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0) scale(1)';
+                }, index * 150);
+            });
+            
+            // Animar métricas individuais dentro dos cards
+            setTimeout(() => {
+                const metricBoxes = document.querySelectorAll('.metric-box');
+                metricBoxes.forEach((box, index) => {
+                    box.style.opacity = '0';
+                    box.style.transform = 'scale(0.9)';
+                    
+                    setTimeout(() => {
+                        box.style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                        box.style.opacity = '1';
+                        box.style.transform = 'scale(1)';
+                    }, index * 50);
+                });
+            }, 500);
+        }, 1400);
+        
+        // Animar navigation
+        setTimeout(() => {
+            const navigation = document.querySelector('.navigation');
+            if (navigation) {
+                navigation.style.opacity = '0';
+                navigation.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    navigation.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                    navigation.style.opacity = '1';
+                    navigation.style.transform = 'translateY(0)';
+                }, 100);
+            }
+        }, 2000);
+    }
+
+    // Initialize everything with dark gaming theme
+    initializeCharts();
+    animateElements();
+    
+    console.log('🌙 Dark Gaming Theme - Charts and animations initialized!');
+    console.log('✨ Tema: Roxo, Dourado e Verde Neon aplicado com sucesso!');
+});
+</script>
+{% endblock %} 

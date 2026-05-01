@@ -1,0 +1,545 @@
+/* Componentes Específicos - Rematch Analyzer - Tema Dark Gaming */
+
+/* Variáveis do tema dark gaming */
+:root {
+    /* Paleta Dark Elegante */
+    --color-gray-100: #1a1a2e;     /* Roxo muito escuro */
+    --color-gray-200: #16213e;     /* Azul muito escuro */
+    --color-gray-300: #0f3460;     /* Azul escuro */
+    --color-gray-400: #533483;     /* Roxo médio */
+    --color-gray-500: #7b68ee;     /* Roxo claro */
+    --color-gray-600: #9d8df1;     /* Roxo suave */
+    --color-gray-700: #c9c3f0;     /* Lavanda */
+    --color-gray-800: #e6e6fa;     /* Lavanda claro */
+    --color-gray-900: #ffffff;     /* Branco puro */
+    
+    /* Sombras dark com brilho dourado */
+    --shadow-default: 0 4px 20px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(218, 165, 32, 0.1);
+    --shadow-active: 0 8px 40px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(218, 165, 32, 0.2);
+    
+    /* Cores do tema Dark Gaming */
+    --color-primary: #7b68ee;      /* Roxo vibrante */
+    --color-primary-light: #9d8df1; /* Roxo claro */
+    --color-success: #00ff88;      /* Verde neon */
+    --color-warning: #daa520;      /* Dourado */
+    --color-danger: #ff4757;       /* Vermelho neon */
+    
+    /* Cores extras dark theme */
+    --color-dark-bg: #0d1117;      /* Preto azulado */
+    --color-dark-surface: #161b22; /* Cinza escuro */
+    --color-purple-deep: #4c1d95;  /* Roxo profundo */
+    --color-gold: #ffd700;         /* Dourado brilhante */
+    --color-gold-dark: #daa520;    /* Dourado escuro */
+    --color-field-green: #00ff88;  /* Verde neon */
+    --color-sky-blue: #7b68ee;     /* Roxo como sky blue */
+}
+
+/* Enhanced Forms com tema dark gaming */
+.form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.form-control:invalid {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.2);
+}
+
+.form-control:valid {
+    border-color: var(--color-success);
+    box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.2);
+}
+
+.form-text {
+    color: var(--color-gray-600);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    font-weight: 400;
+}
+
+.form-error {
+    color: var(--color-danger);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: none;
+}
+
+.form-control.is-invalid + .form-error {
+    display: block;
+}
+
+/* Loading States com animação dark gaming */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid transparent;
+    border-top-color: var(--color-gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Stats Cards com efeito dark gaming */
+.stat-card {
+    background: rgba(22, 33, 62, 0.9);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 
+        var(--shadow-default),
+        0 0 15px rgba(123, 104, 238, 0.2);
+    border: 1px solid rgba(123, 104, 238, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-gold), var(--color-primary));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover::before {
+    transform: scaleX(1);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 
+        var(--shadow-active),
+        0 0 25px rgba(123, 104, 238, 0.3),
+        0 0 40px rgba(218, 165, 32, 0.2);
+    border-color: var(--color-gold);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-gold);
+    margin-bottom: 0.5rem;
+    line-height: 1;
+    text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--color-gray-700);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Player Cards com tema dark gaming */
+.player-section {
+    background: rgba(22, 33, 62, 0.85);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 2px solid rgba(123, 104, 238, 0.4);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.player-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        var(--color-gold) 0%, 
+        var(--color-primary) 50%, 
+        var(--color-gold) 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.player-section:hover::before {
+    transform: scaleX(1);
+}
+
+.player-section:hover {
+    border-color: var(--color-gold);
+    transform: translateY(-2px);
+    box-shadow: 
+        var(--shadow-default),
+        0 0 25px rgba(255, 215, 0, 0.3);
+}
+
+.player-section.player-1 {
+    border-color: rgba(123, 104, 238, 0.5);
+}
+
+.player-section.player-2 {
+    border-color: rgba(0, 255, 136, 0.5);
+}
+
+/* Analysis Content com tema dark gaming */
+.ai-card {
+    background: rgba(22, 33, 62, 0.9);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 
+        var(--shadow-default),
+        0 0 20px rgba(123, 104, 238, 0.2);
+    border: 1px solid rgba(123, 104, 238, 0.3);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.ai-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        var(--color-gold) 0%, 
+        var(--color-primary) 33%, 
+        var(--color-success) 66%,
+        var(--color-gold) 100%);
+}
+
+.ai-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(123, 104, 238, 0.3);
+}
+
+.ai-header i {
+    font-size: 1.5rem;
+    color: var(--color-gold);
+    margin-right: 1rem;
+    text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+}
+
+.ai-header h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-gray-900);
+    margin: 0;
+}
+
+.ai-content {
+    color: var(--color-gray-800);
+    line-height: 1.7;
+    font-size: 1rem;
+}
+
+/* Charts com tema dark gaming */
+.chart-card {
+    background: rgba(22, 33, 62, 0.9);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 
+        var(--shadow-default),
+        0 0 15px rgba(123, 104, 238, 0.2);
+    border: 1px solid rgba(123, 104, 238, 0.3);
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.chart-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-success), var(--color-primary));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.chart-card:hover::before {
+    transform: scaleX(1);
+}
+
+.chart-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        var(--shadow-active),
+        0 0 25px rgba(123, 104, 238, 0.3);
+    border-color: var(--color-gold);
+}
+
+.chart-card h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-gold);
+    margin-bottom: 1.5rem;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(255, 215, 0, 0.3);
+}
+
+/* Modes Grid com tema dark gaming */
+.modes-card {
+    background: rgba(22, 33, 62, 0.9);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 
+        var(--shadow-default),
+        0 0 20px rgba(123, 104, 238, 0.2);
+    border: 1px solid rgba(123, 104, 238, 0.3);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.modes-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        var(--color-success) 0%, 
+        var(--color-primary) 50%, 
+        var(--color-gold) 100%);
+}
+
+.modes-card h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-gold);
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(123, 104, 238, 0.3);
+}
+
+.modes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.mode-item {
+    background: rgba(26, 26, 46, 0.8);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid rgba(123, 104, 238, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+}
+
+.mode-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-success), var(--color-primary));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.mode-item:hover::before {
+    transform: scaleX(1);
+}
+
+.mode-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        var(--shadow-default),
+        0 0 20px rgba(123, 104, 238, 0.3);
+    border-color: var(--color-gold);
+}
+
+.mode-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(123, 104, 238, 0.3);
+}
+
+.mode-header h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-gold);
+    margin: 0;
+}
+
+.mode-matches {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+    font-weight: 500;
+}
+
+.mode-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.mode-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: rgba(22, 33, 62, 0.9);
+    border-radius: 6px;
+    border: 1px solid rgba(123, 104, 238, 0.3);
+    transition: all 0.2s ease;
+}
+
+.mode-stat:hover {
+    transform: scale(1.02);
+    border-color: var(--color-gold);
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+}
+
+.mode-stat .stat-label {
+    font-size: 0.75rem;
+    color: var(--color-gray-700);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.mode-stat .stat-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-gold);
+}
+
+/* Navigation com tema dark gaming */
+.navigation {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 2rem 0;
+}
+
+/* Focus states para acessibilidade dark */
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support dark */
+@media (prefers-contrast: high) {
+    :root {
+        --color-gray-300: #7b68ee;
+        --color-gray-600: #daa520;
+        --shadow-default: 0 2px 8px rgba(255, 215, 0, 0.5);
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Responsive improvements dark */
+@media (max-width: 768px) {
+    .modes-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .mode-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .ai-card,
+    .chart-card,
+    .modes-card {
+        padding: 1.5rem;
+    }
+    
+    .stat-card {
+        padding: 1.25rem;
+    }
+}
+
+/* Efeitos especiais para duelos dark gaming */
+.duel-header {
+    background: rgba(26, 26, 46, 0.9);
+    border: 2px solid rgba(123, 104, 238, 0.4);
+    background-clip: padding-box;
+    position: relative;
+    backdrop-filter: blur(15px);
+}
+
+.duel-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        var(--color-gold) 0%, 
+        var(--color-primary) 25%,
+        var(--color-success) 50%,
+        var(--color-gold) 75%,
+        var(--color-primary) 100%);
+    border-radius: 16px;
+    z-index: -1;
+    margin: -2px;
+}
+
+/* VS Badge especial dark gaming */
+.vs-badge {
+    background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-warning) 100%);
+    color: var(--color-dark-bg);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    box-shadow: 
+        0 4px 15px rgba(255, 215, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    animation: vsGlow 2s ease-in-out infinite;
+}
+
+@keyframes vsGlow {
+    0%, 100% {
+        box-shadow: 
+            0 4px 15px rgba(255, 215, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    50% {
+        box-shadow: 
+            0 6px 25px rgba(255, 215, 0, 0.7),
+            inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+} 

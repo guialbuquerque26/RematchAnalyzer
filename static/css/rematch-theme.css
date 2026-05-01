@@ -1,0 +1,418 @@
+/* Rematch Theme - Dark Gaming - Efeitos Visuais Especiais */
+
+/* Partículas Flutuantes Dark Gaming */
+.rematch-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.8;
+}
+
+.rematch-particles::before,
+.rematch-particles::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: var(--color-gold);
+    border-radius: 50%;
+    animation: float-particle 20s linear infinite;
+    opacity: 0.6;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.rematch-particles::before {
+    top: 20%;
+    left: 10%;
+    animation-delay: -8s;
+    animation-duration: 25s;
+}
+
+.rematch-particles::after {
+    top: 60%;
+    right: 15%;
+    animation-delay: -15s;
+    animation-duration: 30s;
+    background: var(--color-primary);
+    box-shadow: 0 0 15px rgba(123, 104, 238, 0.5);
+}
+
+@keyframes float-particle {
+    0% {
+        transform: translateY(100vh) scale(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.6;
+        transform: translateY(90vh) scale(1) rotate(36deg);
+    }
+    90% {
+        opacity: 0.6;
+        transform: translateY(-10vh) scale(1) rotate(324deg);
+    }
+    100% {
+        transform: translateY(-20vh) scale(0) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Overlay Dourado do Rematch Dark */
+.rematch-brand-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 6rem;
+    font-weight: 100;
+    color: var(--color-gold);
+    opacity: 0.12;
+    z-index: -1;
+    user-select: none;
+    pointer-events: none;
+    letter-spacing: 0.8rem;
+    animation: brand-pulse 25s ease-in-out infinite;
+    text-shadow: 
+        0 0 30px rgba(255, 215, 0, 0.4),
+        0 0 60px rgba(218, 165, 32, 0.3),
+        0 0 90px rgba(255, 215, 0, 0.2);
+}
+
+@keyframes brand-pulse {
+    0%, 100% {
+        opacity: 0.12;
+        transform: translate(-50%, -50%) rotate(-45deg) scale(1);
+        text-shadow: 
+            0 0 30px rgba(255, 215, 0, 0.4),
+            0 0 60px rgba(218, 165, 32, 0.3),
+            0 0 90px rgba(255, 215, 0, 0.2);
+    }
+    50% {
+        opacity: 0.18;
+        transform: translate(-50%, -50%) rotate(-45deg) scale(1.02);
+        text-shadow: 
+            0 0 40px rgba(255, 215, 0, 0.5),
+            0 0 80px rgba(218, 165, 32, 0.4),
+            0 0 120px rgba(255, 215, 0, 0.3);
+    }
+}
+
+/* Efeito Glow nos Cards Dark Gaming */
+.card:hover,
+.form-card:hover,
+.info-card:hover {
+    box-shadow: 
+        var(--shadow-active),
+        0 0 25px rgba(123, 104, 238, 0.3),
+        0 0 50px rgba(255, 215, 0, 0.2),
+        inset 0 1px 0 rgba(255, 215, 0, 0.1);
+}
+
+/* Gradiente Especial nos Buttons Dark Gaming */
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-purple-deep) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-warning) 100%);
+    color: var(--color-dark-bg);
+    border: 2px solid var(--color-gold);
+    box-shadow: 
+        var(--shadow-default),
+        0 0 15px rgba(255, 215, 0, 0.4);
+    font-weight: 600;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-gold) 100%);
+    transform: translateY(-2px);
+    box-shadow: 
+        var(--shadow-active),
+        0 0 25px rgba(255, 215, 0, 0.6);
+    color: var(--color-dark-bg);
+}
+
+/* Loading com Tema Dark Gaming */
+.loading-spinner {
+    border-top-color: var(--color-gold) !important;
+    position: relative;
+}
+
+.loading-spinner::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60%;
+    height: 60%;
+    border: 2px solid transparent;
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: spin 0.8s linear infinite reverse;
+}
+
+/* Navbar com Efeito Glass Dark Gaming */
+.navbar {
+    background: rgba(26, 26, 46, 0.95) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 2px solid var(--color-gold-dark);
+    position: relative;
+}
+
+.navbar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+    opacity: 0.6;
+}
+
+/* Flash Messages com Estilo Dark Gaming */
+.alert {
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.alert-success {
+    background: rgba(0, 255, 136, 0.15);
+    border-left: 4px solid var(--color-success);
+    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.2);
+}
+
+.alert-danger {
+    background: rgba(255, 71, 87, 0.15);
+    border-left: 4px solid var(--color-danger);
+    box-shadow: 0 4px 20px rgba(255, 71, 87, 0.2);
+}
+
+/* Elementos Gaming Especiais */
+.gaming-border {
+    position: relative;
+    overflow: hidden;
+}
+
+.gaming-border::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        var(--color-gold) 0%, 
+        var(--color-primary) 25%,
+        var(--color-success) 50%,
+        var(--color-primary) 75%,
+        var(--color-gold) 100%);
+    padding: 2px;
+    border-radius: inherit;
+    z-index: -1;
+    animation: border-flow 3s linear infinite;
+}
+
+@keyframes border-flow {
+    0% { 
+        background-position: 0% 50%;
+    }
+    100% { 
+        background-position: 200% 50%;
+    }
+}
+
+/* Holographic Effect */
+.holographic {
+    background: linear-gradient(45deg, 
+        rgba(123, 104, 238, 0.2) 0%,
+        rgba(255, 215, 0, 0.2) 25%,
+        rgba(0, 255, 136, 0.2) 50%,
+        rgba(255, 215, 0, 0.2) 75%,
+        rgba(123, 104, 238, 0.2) 100%);
+    background-size: 200% 200%;
+    animation: holographic-shift 4s ease-in-out infinite;
+}
+
+@keyframes holographic-shift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Neon Glow Effect */
+.neon-glow {
+    text-shadow: 
+        0 0 5px currentColor,
+        0 0 10px currentColor,
+        0 0 15px currentColor,
+        0 0 20px var(--color-gold);
+    animation: neon-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes neon-pulse {
+    from {
+        text-shadow: 
+            0 0 5px currentColor,
+            0 0 10px currentColor,
+            0 0 15px currentColor,
+            0 0 20px var(--color-gold);
+    }
+    to {
+        text-shadow: 
+            0 0 10px currentColor,
+            0 0 20px currentColor,
+            0 0 30px currentColor,
+            0 0 40px var(--color-gold);
+    }
+}
+
+/* Cyber Grid Background */
+.cyber-grid {
+    background-image: 
+        linear-gradient(rgba(123, 104, 238, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(123, 104, 238, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    animation: grid-move 20s linear infinite;
+}
+
+@keyframes grid-move {
+    0% { background-position: 0 0; }
+    100% { background-position: 20px 20px; }
+}
+
+/* Responsivo para Mobile Dark Gaming */
+@media (max-width: 768px) {
+    .rematch-brand-overlay {
+        font-size: 3rem;
+        letter-spacing: 0.4rem;
+    }
+    
+    .rematch-particles::before,
+    .rematch-particles::after {
+        display: none; /* Remove partículas no mobile para performance */
+    }
+    
+    .gaming-border::before {
+        animation-duration: 2s; /* Acelera animações no mobile */
+    }
+}
+
+/* Scroll Personalizado Dark Gaming */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-gray-200);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--color-gold), var(--color-primary));
+    border-radius: 4px;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--color-primary), var(--color-success));
+    box-shadow: 0 0 12px rgba(123, 104, 238, 0.6);
+}
+
+/* Selection Color Dark Gaming */
+::selection {
+    background: rgba(255, 215, 0, 0.3);
+    color: var(--color-dark-bg);
+}
+
+::-moz-selection {
+    background: rgba(255, 215, 0, 0.3);
+    color: var(--color-dark-bg);
+}
+
+/* Elementos de Loading Especiais */
+.loading-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.loading-step {
+    padding: 0.75rem 1rem;
+    background: rgba(26, 26, 46, 0.8);
+    border-radius: 8px;
+    color: var(--color-gray-600);
+    border: 1px solid rgba(123, 104, 238, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.loading-step.active {
+    color: var(--color-gold);
+    border-color: var(--color-gold);
+    background: rgba(26, 26, 46, 0.9);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.loading-step.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--color-gold);
+    animation: loading-progress 1s ease-in-out;
+}
+
+@keyframes loading-progress {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}
+
+/* Gaming Watermark */
+.rematch-watermark {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 2rem;
+    opacity: 0.3;
+    z-index: -1;
+    animation: watermark-float 6s ease-in-out infinite;
+}
+
+@keyframes watermark-float {
+    0%, 100% {
+        transform: translateY(0px);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateY(-10px);
+        opacity: 0.5;
+    }
+}

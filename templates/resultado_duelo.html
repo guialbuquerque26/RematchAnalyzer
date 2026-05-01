@@ -1,0 +1,1794 @@
+{% extends "base.html" %}
+
+{% block title %}Duelo - {{ player1_info.display_name }} vs {{ player2_info.display_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Cabeçalho do Duelo -->
+    <div class="duel-header">
+        <div class="duel-title-section">
+            <h1 class="main-title">Duelo de Jogadores</h1>
+            <p class="duel-subtitle">Análise comparativa completa</p>
+        </div>
+        
+        <div class="players-cards">
+            <!-- Player 1 Card -->
+            <div class="player-card player-1-card">
+                <div class="player-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="player-details">
+                    <h3 class="player-name">{{ player1_info.display_name }}</h3>
+                    <div class="player-info">
+                        {% if player1_info.level %}
+                        <span class="info-badge level">Level {{ player1_info.level }}</span>
+                        {% endif %}
+                        {% if scraping_data1 and scraping_data1.status == 'success' and scraping_data1.player_info.grade %}
+                        <span class="info-badge grade">{{ scraping_data1.player_info.grade }}</span>
+                        {% endif %}
+                        {% if player1_info.title %}
+                        <span class="info-badge title">{{ player1_info.title }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="player-role">
+                        <span class="role-badge player-1-role">
+                            {% if atuacao1.lower() == 'geral' %}🎯 Análise Geral
+                            {% elif atuacao1.lower() == 'ofensiva' %}⚔️ Foco Ofensivo
+                            {% else %}🛡️ Foco Defensivo
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="player-quick-stats">
+                        <div class="quick-stat">
+                            <span class="stat-value">{{ resumo1.total_partidas }}</span>
+                            <span class="stat-label">Partidas</span>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="stat-value">{{ "%.1f"|format(resumo1.taxa_vitoria_geral) }}%</span>
+                            <span class="stat-label">Win Rate</span>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="stat-value">{{ resumo1.total_gols }}</span>
+                            <span class="stat-label">Gols</span>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="stat-value">{{ resumo1.total_mvps }}</span>
+                            <span class="stat-label">MVPs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- VS Badge -->
+            <div class="vs-section">
+                <div class="vs-badge">VS</div>
+                <div class="vs-decoration">
+                    <div class="vs-line"></div>
+                    <div class="vs-sparks">
+                        <i class="fas fa-bolt"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Player 2 Card -->
+            <div class="player-card player-2-card">
+                <div class="player-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="player-details">
+                    <h3 class="player-name">{{ player2_info.display_name }}</h3>
+                    <div class="player-info">
+                        {% if player2_info.level %}
+                        <span class="info-badge level">Level {{ player2_info.level }}</span>
+                        {% endif %}
+                        {% if scraping_data2 and scraping_data2.status == 'success' and scraping_data2.player_info.grade %}
+                        <span class="info-badge grade">{{ scraping_data2.player_info.grade }}</span>
+                        {% endif %}
+                        {% if player2_info.title %}
+                        <span class="info-badge title">{{ player2_info.title }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="player-role">
+                        <span class="role-badge player-2-role">
+                            {% if atuacao2.lower() == 'geral' %}🎯 Análise Geral
+                            {% elif atuacao2.lower() == 'ofensiva' %}⚔️ Foco Ofensivo
+                            {% else %}🛡️ Foco Defensivo
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="player-quick-stats">
+                        <div class="quick-stat">
+                            <span class="stat-value">{{ resumo2.total_partidas }}</span>
+                            <span class="stat-label">Partidas</span>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="stat-value">{{ "%.1f"|format(resumo2.taxa_vitoria_geral) }}%</span>
+                            <span class="stat-label">Win Rate</span>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="stat-value">{{ resumo2.total_gols }}</span>
+                            <span class="stat-label">Gols</span>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="stat-value">{{ resumo2.total_mvps }}</span>
+                            <span class="stat-label">MVPs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Layout de Duas Colunas: IA + Comparação -->
+    <div class="main-content-grid">
+        <!-- Análise da IA -->
+        <div class="analysis-section">
+            <div class="section-header">
+                <i class="fas fa-robot"></i>
+                <h3>Análise da IA Gemini</h3>
+            </div>
+            <div class="analysis-content">
+                <div class="analysis-scroll">
+                    {{ analise_ia|formatar_analise|safe }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comparação dos Dados -->
+        <div class="comparison-section">
+            <div class="section-header">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Comparação de Estatísticas</h3>
+            </div>
+            
+            <div class="comparison-content">
+                <div class="players-comparison">
+                    <!-- Jogador 1 -->
+                    <div class="player-column player-1-column">
+                        <div class="player-header">
+                            <i class="fas fa-user-circle"></i>
+                            <h4>{{ player1_info.display_name or "Jogador 1" }}</h4>
+                            <div class="player-role">
+                                {% if atuacao1.lower() == 'geral' %}🎯 Análise Geral
+                                {% elif atuacao1.lower() == 'ofensiva' %}⚔️ Foco Ofensivo
+                                {% else %}🛡️ Foco Defensivo
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">{{ resumo1.total_partidas }}</div>
+                                <div class="stat-label">Partidas</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ "%.1f"|format(resumo1.taxa_vitoria_geral) }}%</div>
+                                <div class="stat-label">Taxa Vitória</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ resumo1.total_gols }}</div>
+                                <div class="stat-label">Gols</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ resumo1.total_assist }}</div>
+                                <div class="stat-label">Assistências</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ resumo1.total_participacoes }}</div>
+                                <div class="stat-label">Participações</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ "%.1f"|format(resumo1.acuracia_geral) }}%</div>
+                                <div class="stat-label">Acuracidade</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ resumo1.total_mvps }}</div>
+                                <div class="stat-label">MVPs</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ resumo1.total_acoes_defensivas }}</div>
+                                <div class="stat-label">Ações Defensivas</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Jogador 2 -->
+                    <div class="player-column player-2-column">
+                        <div class="player-header">
+                            <i class="fas fa-user-circle"></i>
+                            <h4>{{ player2_info.display_name or "Jogador 2" }}</h4>
+                            <div class="player-role">
+                                {% if atuacao2.lower() == 'geral' %}🎯 Análise Geral
+                                {% elif atuacao2.lower() == 'ofensiva' %}⚔️ Foco Ofensivo
+                                {% else %}🛡️ Foco Defensivo
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">{{ resumo2.total_partidas }}</div>
+                                <div class="stat-label">Partidas</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ "%.1f"|format(resumo2.taxa_vitoria_geral) }}%</div>
+                                <div class="stat-label">Taxa Vitória</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ resumo2.total_gols }}</div>
+                                <div class="stat-label">Gols</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ resumo2.total_assist }}</div>
+                                <div class="stat-label">Assistências</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ resumo2.total_participacoes }}</div>
+                                <div class="stat-label">Participações</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ "%.1f"|format(resumo2.acuracia_geral) }}%</div>
+                                <div class="stat-label">Acuracidade</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ resumo2.total_mvps }}</div>
+                                <div class="stat-label">MVPs</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">{{ resumo2.total_acoes_defensivas }}</div>
+                                <div class="stat-label">Ações Defensivas</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Playing Styles -->
+    <div class="playing-styles-section">
+        <div class="section-title">
+            <i class="fas fa-chart-radar"></i>
+            <h4>Comparação de Estilos de Jogo</h4>
+            <div class="title-decoration"></div>
+        </div>
+        
+        <div class="styles-comparison-grid">
+            <!-- Playing Style Player 1 -->
+            {% if scraping_data1 and scraping_data1.status == 'success' and scraping_data1.playing_style_analysis %}
+            <div class="style-chart-card player-1-style">
+                <div class="style-chart-header">
+                    <i class="fas fa-user-circle"></i>
+                    <h5>{{ player1_info.display_name or "Jogador 1" }}</h5>
+                </div>
+                <div class="style-chart-container">
+                    <canvas id="playingStyleChart1" width="440" height="280"></canvas>
+                    <div class="style-quality" id="styleQuality1">
+                        Calculando...
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="style-chart-card player-1-style no-data">
+                <div class="style-chart-header">
+                    <i class="fas fa-user-circle"></i>
+                    <h5>{{ player1_info.display_name or "Jogador 1" }}</h5>
+                </div>
+                <div class="no-data-message">
+                    <i class="fas fa-chart-radar"></i>
+                    <p>Dados de estilo de jogo não disponíveis</p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- VS Badge Central -->
+            <div class="vs-styles-badge">
+                <div class="vs-icon">⚡</div>
+                <div class="vs-text">VS</div>
+            </div>
+            
+            <!-- Playing Style Player 2 -->
+            {% if scraping_data2 and scraping_data2.status == 'success' and scraping_data2.playing_style_analysis %}
+            <div class="style-chart-card player-2-style">
+                <div class="style-chart-header">
+                    <i class="fas fa-user-circle"></i>
+                    <h5>{{ player2_info.display_name or "Jogador 2" }}</h5>
+                </div>
+                <div class="style-chart-container">
+                    <canvas id="playingStyleChart2" width="440" height="280"></canvas>
+                    <div class="style-quality" id="styleQuality2">
+                        Calculando...
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="style-chart-card player-2-style no-data">
+                <div class="style-chart-header">
+                    <i class="fas fa-user-circle"></i>
+                    <h5>{{ player2_info.display_name or "Jogador 2" }}</h5>
+                </div>
+                <div class="no-data-message">
+                    <i class="fas fa-chart-radar"></i>
+                    <p>Dados de estilo de jogo não disponíveis</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Ações -->
+    <div class="actions-section">
+        <a href="{{ url_for('index') }}" class="btn btn-outline">
+            <i class="fas fa-home me-2"></i>Voltar ao Início
+        </a>
+        <a href="{{ url_for('duelo') }}" class="btn btn-primary">
+            <i class="fas fa-redo me-2"></i>Novo Duelo
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    .duel-header {
+        background: rgba(22, 33, 62, 0.9);
+        border-radius: 20px;
+        padding: 3rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 
+            var(--shadow-active),
+            0 0 30px rgba(123, 104, 238, 0.3);
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(15px);
+    }
+    
+    .duel-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--color-gold), var(--color-primary), var(--color-success), var(--color-gold));
+    }
+    
+    .duel-title-section {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .main-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--color-gray-900);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.025em;
+    }
+    
+    .duel-subtitle {
+        font-size: 1.1rem;
+        color: var(--color-gray-600);
+        margin: 0;
+        font-weight: 400;
+    }
+    
+    .players-cards {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 2rem;
+        align-items: center;
+    }
+    
+    .player-card {
+        background: rgba(26, 26, 46, 0.9);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 
+            var(--shadow-default),
+            0 0 20px rgba(123, 104, 238, 0.2);
+        border: 2px solid transparent;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+    
+    .player-1-card {
+        border-color: rgba(123, 104, 238, 0.4);
+    }
+    
+    .player-1-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--color-gold), var(--color-primary));
+    }
+    
+    .player-2-card {
+        border-color: rgba(0, 255, 136, 0.4);
+    }
+    
+    .player-2-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--color-success), var(--color-gold));
+    }
+    
+    .player-card:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 
+            var(--shadow-active),
+            0 0 30px rgba(25, 118, 210, 0.2);
+    }
+    
+    .player-avatar {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .player-avatar i {
+        font-size: 4rem;
+        color: var(--color-gray-600);
+        background: rgba(13, 17, 23, 0.8);
+        border-radius: 50%;
+        padding: 1rem;
+        border: 3px solid var(--color-gray-400);
+    }
+    
+    .player-1-card .player-avatar i {
+        color: var(--color-gold);
+        border-color: var(--color-gold);
+        background: rgba(255, 215, 0, 0.15);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+    
+    .player-2-card .player-avatar i {
+        color: var(--color-success);
+        border-color: var(--color-success);
+        background: rgba(0, 255, 136, 0.15);
+        box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    }
+    
+    .player-details {
+        text-align: center;
+    }
+    
+    .player-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-gray-900);
+        margin-bottom: 1rem;
+        letter-spacing: -0.025em;
+    }
+    
+    .player-info {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .info-badge {
+        background: rgba(13, 17, 23, 0.8);
+        color: var(--color-gray-700);
+        padding: 0.375rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+    
+    .info-badge.level {
+        background: rgba(123, 104, 238, 0.2);
+        color: var(--color-primary);
+        border-color: var(--color-primary);
+    }
+    
+    .info-badge.grade {
+        background: rgba(255, 215, 0, 0.2);
+        color: var(--color-gold);
+        border-color: var(--color-gold);
+        font-weight: 600;
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+    }
+    
+    .info-badge.title {
+        background: rgba(0, 255, 136, 0.2);
+        color: var(--color-success);
+        border-color: var(--color-success);
+    }
+    
+    .player-role {
+        margin-bottom: 1.5rem;
+    }
+    
+    .role-badge {
+        background: rgba(13, 17, 23, 0.8);
+        color: var(--color-gray-700);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        display: inline-block;
+    }
+    
+    .player-1-role {
+        background: rgba(123, 104, 238, 0.2);
+        color: var(--color-primary);
+        border-color: var(--color-primary);
+        box-shadow: 0 0 10px rgba(123, 104, 238, 0.2);
+    }
+    
+    .player-2-role {
+        background: rgba(0, 255, 136, 0.2);
+        color: var(--color-success);
+        border-color: var(--color-success);
+        box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+    }
+    
+    .player-quick-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .quick-stat {
+        background: rgba(13, 17, 23, 0.8);
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        transition: all 0.2s ease;
+    }
+    
+    .quick-stat:hover {
+        background: rgba(22, 33, 62, 0.9);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-default);
+        border-color: var(--color-gold);
+    }
+    
+    .stat-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--color-gold);
+        display: block;
+        margin-bottom: 0.25rem;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    
+    .stat-label {
+        font-size: 0.7rem;
+        color: var(--color-gray-700);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .vs-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .vs-badge {
+        background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-sun-yellow) 100%);
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 800;
+        padding: 1rem 1.5rem;
+        border-radius: 50%;
+        box-shadow: 
+            var(--shadow-active),
+            0 0 20px rgba(255, 152, 0, 0.4);
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        border: 3px solid rgba(255, 255, 255, 0.9);
+        animation: vs-pulse 3s ease-in-out infinite;
+        min-width: 80px;
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    @keyframes vs-pulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 
+                var(--shadow-active),
+                0 0 20px rgba(255, 152, 0, 0.4);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 
+                var(--shadow-active),
+                0 0 30px rgba(255, 152, 0, 0.6),
+                0 0 50px rgba(255, 152, 0, 0.3);
+        }
+    }
+    
+    .vs-decoration {
+        margin-top: 1rem;
+        opacity: 0.6;
+    }
+    
+    .vs-line {
+        width: 2px;
+        height: 30px;
+        background: linear-gradient(180deg, 
+            transparent 0%, 
+            var(--color-warning) 50%, 
+            transparent 100%);
+        margin: 0 auto 0.5rem;
+    }
+    
+    .vs-sparks {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        color: var(--color-warning);
+        font-size: 0.875rem;
+        animation: sparks-twinkle 2s ease-in-out infinite;
+    }
+    
+    @keyframes sparks-twinkle {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.8; }
+    }
+    
+    .main-content-grid {
+        display: grid;
+        grid-template-columns: 0.7fr 1.3fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        align-items: start;
+    }
+    
+    .analysis-section {
+        background: rgba(22, 33, 62, 0.9);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 
+            var(--shadow-default),
+            0 0 20px rgba(123, 104, 238, 0.2);
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        position: relative;
+        overflow: hidden;
+        height: fit-content;
+        backdrop-filter: blur(10px);
+    }
+    
+    .analysis-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--color-gold), var(--color-primary));
+    }
+    
+    .comparison-section {
+        background: rgba(22, 33, 62, 0.9);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 
+            var(--shadow-default),
+            0 0 20px rgba(0, 255, 136, 0.2);
+        border: 1px solid rgba(0, 255, 136, 0.3);
+        position: relative;
+        overflow: hidden;
+        height: fit-content;
+        min-height: 500px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .comparison-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--color-success), var(--color-gold));
+    }
+    
+    .section-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(123, 104, 238, 0.3);
+    }
+    
+    .section-header i {
+        font-size: 1.5rem;
+        color: var(--color-gold);
+        margin-right: 1rem;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    
+    .section-header h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--color-gray-900);
+        margin: 0;
+    }
+    
+    .analysis-content {
+        height: 100%;
+    }
+    
+    .analysis-scroll {
+        max-height: 500px;
+        overflow-y: auto;
+        padding-right: 1rem;
+        margin-right: -1rem;
+    }
+    
+    .analysis-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .analysis-scroll::-webkit-scrollbar-track {
+        background: var(--color-gray-200);
+        border-radius: 3px;
+    }
+    
+    .analysis-scroll::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, var(--color-primary), var(--color-sky-blue));
+        border-radius: 3px;
+    }
+    
+    .analysis-scroll::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, var(--color-sky-blue), var(--color-field-green));
+    }
+    
+    .comparison-content {
+        height: 100%;
+    }
+    
+    .analysis-content {
+        color: var(--color-gray-700);
+        line-height: 1.7;
+        font-size: 1rem;
+    }
+    
+    .secao-titulo {
+        background: var(--color-primary);
+        color: white;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        margin: 1.5rem 0 1rem 0;
+        font-size: 1rem;
+        display: inline-block;
+    }
+    
+    .players-comparison {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        height: 100%;
+        min-height: 400px;
+    }
+    
+    .player-column {
+        background: rgba(26, 26, 46, 0.8);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 2px solid rgba(123, 104, 238, 0.3);
+        transition: all 0.3s ease;
+        height: 100%;
+        backdrop-filter: blur(5px);
+    }
+    
+    .player-column:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-default);
+        border-color: var(--color-gold);
+    }
+    
+    .player-1-column {
+        border-color: rgba(123, 104, 238, 0.4);
+    }
+    
+    .player-2-column {
+        border-color: rgba(0, 255, 136, 0.4);
+    }
+    
+    .player-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(123, 104, 238, 0.3);
+    }
+    
+    .player-header i {
+        font-size: 2rem;
+        color: var(--color-gray-600);
+        margin-bottom: 0.5rem;
+    }
+    
+    .player-1-column .player-header i {
+        color: var(--color-gold);
+        text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    }
+    
+    .player-2-column .player-header i {
+        color: var(--color-success);
+        text-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+    }
+    
+    .player-header h4 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--color-gray-900);
+        margin-bottom: 0.5rem;
+    }
+    
+    .player-role {
+        font-size: 0.875rem;
+        color: var(--color-gray-600);
+        font-weight: 500;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+    
+    .stat-item {
+        background: rgba(22, 33, 62, 0.9);
+        border-radius: 8px;
+        padding: 0.75rem;
+        text-align: center;
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        transition: all 0.2s ease;
+    }
+    
+    .stat-item:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-default);
+        border-color: var(--color-gold);
+        background: rgba(26, 26, 46, 0.9);
+    }
+    
+    .stat-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--color-gold);
+        margin-bottom: 0.25rem;
+        line-height: 1;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    
+    .stat-label {
+        font-size: 0.7rem;
+        color: var(--color-gray-700);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        line-height: 1;
+    }
+    
+    /* Playing Styles Section */
+    .playing-styles-section {
+        background: rgba(22, 33, 62, 0.9);
+        border-radius: 20px;
+        padding: 4rem 3.53rem;
+        margin-bottom: 3rem;
+        box-shadow: 
+            var(--shadow-default),
+            0 0 30px rgba(123, 104, 238, 0.3);
+        border: 1px solid rgba(123, 104, 238, 0.3);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        min-height: 500px;
+        max-width: 1412px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .playing-styles-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, 
+            var(--color-gold) 0%, 
+            var(--color-primary) 25%,
+            var(--color-success) 50%,
+            var(--color-primary) 75%,
+            var(--color-gold) 100%);
+    }
+    
+    .section-title {
+        display: flex;
+        align-items: center;
+        margin-bottom: 3rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid rgba(123, 104, 238, 0.3);
+        position: relative;
+        text-align: center;
+        justify-content: center;
+    }
+    
+    .section-title i {
+        font-size: 2rem;
+        color: var(--color-gold);
+        margin-right: 1.5rem;
+        text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    }
+    
+    .section-title h4 {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--color-gold);
+        margin: 0 1.5rem 0 0;
+    }
+    
+    .title-decoration {
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--color-gold), var(--color-primary));
+        border-radius: 2px;
+    }
+    
+    .styles-comparison-grid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 3.53rem;
+        align-items: center;
+    }
+    
+    .style-chart-card {
+        background: rgba(26, 26, 46, 0.8);
+        border-radius: 20px;
+        padding: 2.94rem;
+        box-shadow: 
+            var(--shadow-default),
+            0 0 20px rgba(123, 104, 238, 0.2);
+        border: 2px solid rgba(123, 104, 238, 0.3);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(5px);
+        min-height: 400px;
+    }
+    
+    .style-chart-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .player-1-style {
+        border-color: rgba(123, 104, 238, 0.4);
+    }
+    
+    .player-1-style::before {
+        background: linear-gradient(90deg, var(--color-gold), var(--color-primary));
+    }
+    
+    .player-2-style {
+        border-color: rgba(0, 255, 136, 0.4);
+    }
+    
+    .player-2-style::before {
+        background: linear-gradient(90deg, var(--color-success), var(--color-gold));
+    }
+    
+    .style-chart-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .style-chart-card:hover {
+        transform: translateY(-6px) scale(1.03);
+        box-shadow: 
+            var(--shadow-active),
+            0 0 30px rgba(123, 104, 238, 0.4),
+            0 0 50px rgba(218, 165, 32, 0.3);
+        border-color: var(--color-gold);
+        background: rgba(22, 33, 62, 0.9);
+    }
+    
+    .style-chart-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(123, 104, 238, 0.3);
+    }
+    
+    .style-chart-header i {
+        font-size: 2rem;
+        color: var(--color-gray-600);
+        margin-bottom: 1rem;
+        display: block;
+    }
+    
+    .player-1-style .style-chart-header i {
+        color: var(--color-gold);
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+    
+    .player-2-style .style-chart-header i {
+        color: var(--color-success);
+        text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+    }
+    
+    .style-chart-header h5 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--color-gray-900);
+        margin: 0;
+    }
+    
+    .style-chart-container {
+        position: relative;
+        height: 280px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(ellipse at center,
+            rgba(255, 215, 0, 0.08) 0%,
+            rgba(123, 104, 238, 0.08) 50%,
+            rgba(22, 33, 62, 0.12) 100%);
+        border-radius: 16px;
+        padding: 1.77rem;
+        overflow: hidden;
+    }
+    
+    .style-quality {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(13, 17, 23, 0.9);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        border: 1px solid var(--color-gold);
+        color: var(--color-gold);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+        opacity: 0;
+        animation: slideIn 1s ease 0.5s forwards;
+        z-index: 10;
+    }
+    
+    .no-data {
+        border-color: rgba(123, 104, 238, 0.2) !important;
+    }
+    
+    .no-data-message {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 280px;
+        color: var(--color-gray-600);
+        font-style: italic;
+        text-align: center;
+    }
+    
+    .no-data-message i {
+        font-size: 2.5rem;
+        color: var(--color-gold);
+        margin-bottom: 1.5rem;
+        opacity: 0.6;
+    }
+    
+    .no-data-message p {
+        margin: 0;
+        font-size: 1rem;
+    }
+    
+    .vs-styles-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .vs-icon {
+        font-size: 2.5rem;
+        color: var(--color-warning);
+        animation: pulse-glow 2s ease-in-out infinite;
+    }
+    
+    .vs-text {
+        background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-gold) 100%);
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 800;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        box-shadow: 
+            var(--shadow-default),
+            0 0 20px rgba(255, 152, 0, 0.5);
+        text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    @keyframes pulse-glow {
+        0%, 100% {
+            opacity: 0.7;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+    }
+    
+    .actions-section {
+        text-align: center;
+        margin-top: 2rem;
+        padding: 2rem 0;
+    }
+    
+    .btn {
+        border-radius: 10px;
+        padding: 0.875rem 1.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.975rem;
+        letter-spacing: 0.025em;
+        margin: 0 0.5rem;
+    }
+    
+    .btn-outline {
+        background: white;
+        color: var(--color-gray-600);
+        border: 2px solid var(--color-gray-300);
+        box-shadow: var(--shadow-default);
+    }
+    
+    .btn-outline:hover {
+        background: var(--color-gray-50);
+        color: var(--color-gray-800);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-active);
+        border-color: var(--color-gray-400);
+    }
+    
+    .btn-primary {
+        background: var(--color-primary);
+        color: white;
+        border: 2px solid var(--color-primary);
+        box-shadow: var(--shadow-default);
+    }
+    
+    .btn-primary:hover {
+        background: var(--color-primary-light);
+        border-color: var(--color-primary-light);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-active);
+    }
+    
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 1rem;
+        }
+        
+        .duel-header {
+            padding: 2rem 1rem;
+        }
+        
+        .duel-title-section {
+            margin-bottom: 2rem;
+        }
+        
+        .main-title {
+            font-size: 2rem;
+        }
+        
+        .duel-subtitle {
+            font-size: 1rem;
+        }
+        
+        .players-cards {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        .player-card {
+            padding: 1.5rem;
+        }
+        
+        .player-avatar i {
+            font-size: 3rem;
+            padding: 0.75rem;
+        }
+        
+        .player-name {
+            font-size: 1.25rem;
+        }
+        
+        .player-quick-stats {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+        
+        .quick-stat {
+            padding: 0.75rem;
+        }
+        
+        .stat-value {
+            font-size: 1.1rem;
+        }
+        
+        .vs-section {
+            order: -1;
+        }
+        
+        .vs-badge {
+            font-size: 1.25rem;
+            min-width: 60px;
+            min-height: 60px;
+            padding: 0.75rem 1rem;
+        }
+        
+        .vs-decoration {
+            margin-top: 0.5rem;
+        }
+        
+        .vs-line {
+            height: 20px;
+        }
+        
+        .main-content-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .analysis-section,
+        .comparison-section {
+            padding: 1.5rem;
+            height: auto;
+            min-height: auto;
+        }
+        
+        .analysis-scroll {
+            max-height: 400px;
+        }
+        
+        .players-comparison {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            min-height: auto;
+        }
+        
+        .player-column {
+            padding: 1.25rem;
+            height: auto;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+        
+        .stat-item {
+            padding: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.1rem;
+        }
+        
+        .section-header {
+            text-align: center;
+        }
+        
+        .section-header i {
+            margin-right: 0.5rem;
+            margin-bottom: 0;
+        }
+        
+        .btn {
+            width: 100%;
+            margin: 0.25rem 0;
+        }
+        
+        /* Playing Styles Section - Mobile */
+        .playing-styles-section {
+            padding: 3rem 2.35rem;
+            min-height: 400px;
+        }
+        
+        .section-title {
+            flex-direction: column;
+            text-align: center;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        
+        .section-title i {
+            font-size: 1.75rem;
+        }
+        
+        .section-title h4 {
+            font-size: 1.5rem;
+        }
+        
+        .title-decoration {
+            width: 132px;
+        }
+        
+        .styles-comparison-grid {
+            grid-template-columns: 1fr;
+            gap: 2.35rem;
+        }
+        
+        .style-chart-card {
+            padding: 2.35rem;
+            min-height: 320px;
+        }
+        
+        .style-chart-container {
+            height: 220px;
+            padding: 1.41rem;
+        }
+        
+        .style-quality {
+            top: 0.75rem;
+            right: 0.75rem;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+        }
+        
+        .vs-styles-badge {
+            order: -1;
+            margin-bottom: 1.5rem;
+        }
+        
+        .vs-icon {
+            font-size: 2rem;
+        }
+        
+        .vs-text {
+            font-size: 1rem;
+            padding: 0.6rem 1.2rem;
+        }
+        
+        .no-data-message {
+            height: 220px;
+        }
+        
+        .no-data-message i {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<!-- Chart Data (hidden) -->
+<script type="application/json" id="chartData">
+{
+    "player1": {
+        {% if scraping_data1 and scraping_data1.status == 'success' and scraping_data1.playing_style_analysis %}
+        "available": true,
+        "labels": [
+            {% for style, value in scraping_data1.playing_style_analysis.items() %}
+                {% if value is not none %}"{{ style|title }}"{% if not loop.last %},{% endif %}{% endif %}
+            {% endfor %}
+        ],
+        "values": [
+            {% for style, value in scraping_data1.playing_style_analysis.items() %}
+                {% if value is not none %}{{ value }}{% if not loop.last %},{% endif %}{% endif %}
+            {% endfor %}
+        ]
+        {% else %}
+        "available": false,
+        "labels": [],
+        "values": []
+        {% endif %}
+    },
+    "player2": {
+        {% if scraping_data2 and scraping_data2.status == 'success' and scraping_data2.playing_style_analysis %}
+        "available": true,
+        "labels": [
+            {% for style, value in scraping_data2.playing_style_analysis.items() %}
+                {% if value is not none %}"{{ style|title }}"{% if not loop.last %},{% endif %}{% endif %}
+            {% endfor %}
+        ],
+        "values": [
+            {% for style, value in scraping_data2.playing_style_analysis.items() %}
+                {% if value is not none %}{{ value }}{% if not loop.last %},{% endif %}{% endif %}
+            {% endfor %}
+        ]
+        {% else %}
+        "available": false,
+        "labels": [],
+        "values": []
+        {% endif %}
+    }
+}
+</script>
+
+<script>
+// Playing Style Charts Functions
+function initializePlayingStyleCharts() {
+    // Get chart data from JSON
+    const chartDataElement = document.getElementById('chartData');
+    let chartData = {};
+    
+    try {
+        chartData = JSON.parse(chartDataElement.textContent);
+    } catch (error) {
+        console.error('❌ Error parsing chart data:', error);
+        chartData = {
+            player1: { available: false, labels: [], values: [] },
+            player2: { available: false, labels: [], values: [] }
+        };
+    }
+
+    // Chart colors dark gaming theme
+    const chartColors = {
+        primary: '#7b68ee',        // Roxo vibrante
+        secondary: '#daa520',      // Dourado escuro
+        success: '#00ff88',        // Verde neon
+        warning: '#ffd700',        // Dourado brilhante
+        danger: '#ff4757',         // Vermelho neon
+    };
+
+    // Common chart options dark gaming theme
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: 'rgba(13, 17, 23, 0.95)',
+                titleColor: '#ffd700',
+                bodyColor: '#c9c3f0',
+                borderColor: '#ffd700',
+                borderWidth: 2,
+                cornerRadius: 12,
+                padding: 15,
+                titleFont: { size: 14, weight: '700' },
+                bodyFont: { size: 13, weight: '500' },
+                displayColors: false,
+                callbacks: {
+                    title: function(context) {
+                        return `${context[0].label}`;
+                    },
+                    label: function(context) {
+                        const value = context.parsed.r;
+                        let level = '';
+                        if (value >= 80) level = ' (Excepcional)';
+                        else if (value >= 65) level = ' (Muito Bom)';
+                        else if (value >= 50) level = ' (Bom)';
+                        else if (value >= 35) level = ' (Regular)';
+                        else level = ' (Em Desenvolvimento)';
+                        
+                        return `${value}/100${level}`;
+                    }
+                }
+            }
+        },
+        animation: {
+            duration: 2000,
+            easing: 'easeOutQuart'
+        },
+        scales: {
+            r: {
+                beginAtZero: true,
+                max: 100,
+                min: 0,
+                ticks: {
+                    display: false,  // Hide scale numbers
+                    stepSize: 20,
+                    backdropColor: 'transparent'
+                },
+                grid: {
+                    color: 'rgba(123, 104, 238, 0.4)',
+                    lineWidth: 2
+                },
+                angleLines: {
+                    color: 'rgba(123, 104, 238, 0.5)',
+                    lineWidth: 2
+                },
+                pointLabels: {
+                    color: '#ffd700',  // Gold for labels
+                    font: {
+                        size: 12,
+                        family: 'Inter, sans-serif',
+                        weight: '600'
+                    },
+                    padding: 15
+                }
+            }
+        }
+    };
+
+    // Initialize Player 1 Chart
+    initPlayerChart('playingStyleChart1', 'styleQuality1', chartData.player1, {
+        color: chartColors.warning,
+        background: 'rgba(255, 215, 0, 0.15)'
+    });
+
+    // Initialize Player 2 Chart
+    initPlayerChart('playingStyleChart2', 'styleQuality2', chartData.player2, {
+        color: chartColors.success,
+        background: 'rgba(0, 255, 136, 0.15)'
+    });
+
+    function initPlayerChart(canvasId, qualityId, playerData, colors) {
+        const chartElement = document.getElementById(canvasId);
+        if (!chartElement) return;
+
+        try {
+            if (playerData.available && playerData.labels.length > 0) {
+                const ctx = chartElement.getContext('2d');
+                
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: playerData.labels,
+                        datasets: [{
+                            label: 'Estilo de Jogo',
+                            data: playerData.values,
+                            backgroundColor: colors.background,
+                            borderColor: colors.color,
+                            borderWidth: 4,
+                            pointBackgroundColor: colors.color,
+                            pointBorderColor: '#1a1a2e',
+                            pointBorderWidth: 4,
+                            pointRadius: 8,
+                            pointHoverRadius: 12,
+                            pointHoverBackgroundColor: colors.color,
+                            pointHoverBorderColor: '#ffd700',
+                            pointHoverBorderWidth: 4,
+                            tension: 0.1
+                        }]
+                    },
+                    options: commonOptions
+                });
+                
+                // Calculate and display quality indicator
+                const average = playerData.values.reduce((a, b) => a + b, 0) / playerData.values.length;
+                const qualityElement = document.getElementById(qualityId);
+                
+                let qualityText = '';
+                let qualityColor = '';
+                
+                if (average >= 80) {
+                    qualityText = 'Excepcional';
+                    qualityColor = '#00ff88';
+                } else if (average >= 65) {
+                    qualityText = 'Muito Bom';
+                    qualityColor = '#ffd700';
+                } else if (average >= 50) {
+                    qualityText = 'Bom';
+                    qualityColor = '#7b68ee';
+                } else if (average >= 35) {
+                    qualityText = 'Regular';
+                    qualityColor = '#daa520';
+                } else {
+                    qualityText = 'Em Desenvolvimento';
+                    qualityColor = '#ff4757';
+                }
+                
+                qualityElement.textContent = `${qualityText} (${average.toFixed(1)})`;
+                qualityElement.style.borderColor = qualityColor;
+                qualityElement.style.color = qualityColor;
+                qualityElement.style.boxShadow = `0 0 10px ${qualityColor}40`;
+                
+                console.log(`✅ ${canvasId} Chart initialized successfully`);
+            } else {
+                console.log(`⚠️ No data available for ${canvasId}`);
+            }
+        } catch (error) {
+            console.error(`❌ Error creating ${canvasId}:`, error);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎨 Resultado Duelo - Sistema Moderno Carregado');
+    
+    // Initialize Playing Style Charts
+    initializePlayingStyleCharts();
+    
+    // Layout otimizado sem colapso - melhor aproveitamento do espaço
+        
+        // Animação das seções principais
+        const sections = document.querySelectorAll('.analysis-section, .comparison-section');
+        sections.forEach((section, index) => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(30px)';
+            
+            setTimeout(() => {
+                section.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                section.style.opacity = '1';
+                section.style.transform = 'translateY(0)';
+            }, (index + 2) * 200);
+        });
+        
+        // Animação do cabeçalho do duelo
+        const duelHeader = document.querySelector('.duel-header');
+        if (duelHeader) {
+            duelHeader.style.opacity = '0';
+            duelHeader.style.transform = 'translateY(-20px)';
+            
+            setTimeout(() => {
+                duelHeader.style.transition = 'all 1s cubic-bezier(0.16, 1, 0.3, 1)';
+                duelHeader.style.opacity = '1';
+                duelHeader.style.transform = 'translateY(0)';
+            }, 100);
+        }
+        
+        // Animação sequencial dos elementos do cabeçalho
+        setTimeout(() => {
+            // Título principal
+            const titleSection = document.querySelector('.duel-title-section');
+            if (titleSection) {
+                titleSection.style.opacity = '0';
+                titleSection.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    titleSection.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                    titleSection.style.opacity = '1';
+                    titleSection.style.transform = 'translateY(0)';
+                }, 200);
+            }
+            
+            // Cards dos jogadores
+            const playerCards = document.querySelectorAll('.player-card');
+            playerCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateX(' + (index === 0 ? '-30px' : '30px') + ') scale(0.95)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateX(0) scale(1)';
+                }, 400 + (index * 200));
+            });
+            
+            // VS Badge
+            const vsBadge = document.querySelector('.vs-badge');
+            if (vsBadge) {
+                vsBadge.style.opacity = '0';
+                vsBadge.style.transform = 'scale(0.5) rotate(-90deg)';
+                
+                setTimeout(() => {
+                    vsBadge.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    vsBadge.style.opacity = '1';
+                    vsBadge.style.transform = 'scale(1) rotate(0deg)';
+                }, 600);
+            }
+            
+            // Stats rápidas
+            setTimeout(() => {
+                const quickStats = document.querySelectorAll('.quick-stat');
+                quickStats.forEach((stat, index) => {
+                    stat.style.opacity = '0';
+                    stat.style.transform = 'translateY(15px) scale(0.9)';
+                    
+                    setTimeout(() => {
+                        stat.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+                        stat.style.opacity = '1';
+                        stat.style.transform = 'translateY(0) scale(1)';
+                    }, index * 100);
+                });
+            }, 1000);
+            
+        }, 300);
+        
+        // Animação das colunas dos jogadores (seção de comparação)
+        setTimeout(() => {
+            const playerColumns = document.querySelectorAll('.player-column');
+            playerColumns.forEach((column, index) => {
+                column.style.opacity = '0';
+                column.style.transform = 'translateX(' + (index === 0 ? '-20px' : '20px') + ')';
+                
+                setTimeout(() => {
+                    column.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                    column.style.opacity = '1';
+                    column.style.transform = 'translateX(0)';
+                }, index * 150);
+            });
+        }, 1400);
+        
+        // Animação dos stat items da comparação
+        setTimeout(() => {
+            const statItems = document.querySelectorAll('.stat-item');
+            statItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    item.style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                    item.style.opacity = '1';
+                    item.style.transform = 'scale(1)';
+                }, index * 50);
+            });
+        }, 1600);
+        
+        // Animar seção de Playing Styles
+        setTimeout(() => {
+            const playingStylesSection = document.querySelector('.playing-styles-section');
+            if (playingStylesSection) {
+                playingStylesSection.style.opacity = '0';
+                playingStylesSection.style.transform = 'translateY(40px)';
+                
+                setTimeout(() => {
+                    playingStylesSection.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                    playingStylesSection.style.opacity = '1';
+                    playingStylesSection.style.transform = 'translateY(0)';
+                }, 100);
+            }
+            
+            // Animar os gráficos individuais
+            setTimeout(() => {
+                const styleCards = document.querySelectorAll('.style-chart-card');
+                styleCards.forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(30px) scale(0.95)';
+                    
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0) scale(1)';
+                    }, index * 200);
+                });
+                
+                // Animar VS badge dos styles
+                const vsBadge = document.querySelector('.vs-styles-badge');
+                if (vsBadge) {
+                    vsBadge.style.opacity = '0';
+                    vsBadge.style.transform = 'scale(0.5)';
+                    
+                    setTimeout(() => {
+                        vsBadge.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                        vsBadge.style.opacity = '1';
+                        vsBadge.style.transform = 'scale(1)';
+                    }, 300);
+                }
+            }, 300);
+        }, 1800);
+    });
+</script>
+{% endblock %} 

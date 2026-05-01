@@ -1,0 +1,284 @@
+/* Dark Gaming Override - Garantir tema escuro em todos os elementos */
+
+/* Override global para elementos que podem estar em light mode */
+* {
+    color-scheme: dark;
+}
+
+/* Sobrescrevendo elementos específicos que possam estar em light mode */
+.page-header,
+.form-card,
+.info-card,
+.action-card,
+.player-header,
+.player-column,
+.analysis-section,
+.comparison-section {
+    background: rgba(22, 33, 62, 0.9) !important;
+    color: var(--color-gray-800) !important;
+    border: 1px solid rgba(123, 104, 238, 0.3) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+/* Override para cards específicos */
+.hero-section {
+    background: rgba(26, 26, 46, 0.8) !important;
+}
+
+/* Override para textos e títulos */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--color-gray-900) !important;
+}
+
+p, span, div, li {
+    color: var(--color-gray-800) !important;
+}
+
+/* Override para forms */
+.form-control,
+.form-select {
+    background: rgba(22, 33, 62, 0.8) !important;
+    color: var(--color-gray-800) !important;
+    border: 2px solid rgba(123, 104, 238, 0.4) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background: rgba(22, 33, 62, 0.95) !important;
+    border-color: var(--color-gold) !important;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3) !important;
+}
+
+/* Override para badges e labels */
+.info-badge,
+.badge-pill,
+.scraped-badge,
+.role-badge {
+    background: rgba(26, 26, 46, 0.9) !important;
+    color: var(--color-gold) !important;
+    border: 1px solid rgba(123, 104, 238, 0.4) !important;
+}
+
+/* Override para stats */
+.stat-card,
+.quick-stat,
+.stat-item {
+    background: rgba(22, 33, 62, 0.9) !important;
+    border: 1px solid rgba(123, 104, 238, 0.3) !important;
+}
+
+.stat-value {
+    color: var(--color-gold) !important;
+}
+
+.stat-label {
+    color: var(--color-gray-700) !important;
+}
+
+/* Override para buttons */
+.btn-secondary {
+    background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-warning) 100%) !important;
+    color: var(--color-dark-bg) !important;
+    border: 2px solid var(--color-gold) !important;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-gold) 100%) !important;
+    color: var(--color-dark-bg) !important;
+}
+
+/* Override para player cards no duelo */
+.player-1-card,
+.player-2-card {
+    background: rgba(22, 33, 62, 0.9) !important;
+    border: 2px solid rgba(123, 104, 238, 0.4) !important;
+}
+
+.player-1-card::before {
+    background: linear-gradient(90deg, var(--color-gold), var(--color-primary)) !important;
+}
+
+.player-2-card::before {
+    background: linear-gradient(90deg, var(--color-success), var(--color-primary)) !important;
+}
+
+/* Override para VS badge */
+.vs-badge {
+    background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-warning) 100%) !important;
+    color: var(--color-dark-bg) !important;
+}
+
+/* Override para loading */
+.loading-overlay {
+    background: rgba(13, 17, 23, 0.95) !important;
+}
+
+.loading-content {
+    background: rgba(22, 33, 62, 0.95) !important;
+    border: 2px solid rgba(123, 104, 238, 0.3) !important;
+}
+
+.loading-content h5 {
+    color: var(--color-gold) !important;
+}
+
+/* Override para alerts */
+.alert {
+    color: var(--color-gray-800) !important;
+}
+
+/* Override para tips e info boxes */
+.tip-box {
+    background: rgba(26, 26, 46, 0.8) !important;
+    border-left: 4px solid var(--color-primary) !important;
+}
+
+.tip-box h6 {
+    color: var(--color-gold) !important;
+}
+
+.tip-box p {
+    color: var(--color-gray-700) !important;
+}
+
+/* Override para navegação */
+.navigation {
+    background: rgba(22, 33, 62, 0.8) !important;
+    border-top: 1px solid rgba(123, 104, 238, 0.3) !important;
+}
+
+/* Override para info lists */
+.info-list li {
+    color: var(--color-gray-700) !important;
+}
+
+.info-list li:before {
+    color: var(--color-success) !important;
+}
+
+/* Override para elementos de chart */
+.chart-card h4,
+.modes-card h4,
+.ai-card h4 {
+    color: var(--color-gold) !important;
+}
+
+/* Override para mode items */
+.mode-item {
+    background: rgba(26, 26, 46, 0.8) !important;
+    border: 2px solid rgba(123, 104, 238, 0.3) !important;
+}
+
+.mode-header h5 {
+    color: var(--color-gold) !important;
+}
+
+.mode-matches {
+    color: var(--color-gray-600) !important;
+}
+
+/* Override para análise de IA */
+.ai-content {
+    color: var(--color-gray-800) !important;
+}
+
+.secao-titulo {
+    background: var(--color-primary) !important;
+    color: white !important;
+}
+
+/* Override para elementos específicos do template */
+.players-comparison {
+    background: transparent !important;
+}
+
+.main-content-grid {
+    background: transparent !important;
+}
+
+/* Override para scrollbars em seções específicas */
+.analysis-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--color-gold), var(--color-primary)) !important;
+}
+
+/* Override para player avatars */
+.player-avatar i {
+    color: var(--color-gold) !important;
+    background: rgba(26, 26, 46, 0.8) !important;
+    border-color: var(--color-gold) !important;
+}
+
+/* Override para gradientes específicos */
+.player-1-column {
+    border-color: rgba(123, 104, 238, 0.4) !important;
+}
+
+.player-2-column {
+    border-color: rgba(0, 255, 136, 0.4) !important;
+}
+
+/* Override para texto dos forms */
+.form-text {
+    color: var(--color-gray-600) !important;
+}
+
+.form-label {
+    color: var(--color-gray-800) !important;
+}
+
+/* Override para subtítulos */
+.hero-subtitle,
+.duel-subtitle {
+    color: var(--color-gray-700) !important;
+}
+
+/* Override para elementos com text-primary */
+.text-primary {
+    color: var(--color-gold) !important;
+}
+
+.text-secondary {
+    color: var(--color-success) !important;
+}
+
+/* Override para elementos focus */
+.focus-geral {
+    background: rgba(0, 255, 136, 0.2) !important;
+    color: var(--color-success) !important;
+}
+
+.focus-ofensiva {
+    background: rgba(255, 71, 87, 0.2) !important;
+    color: var(--color-danger) !important;
+}
+
+.focus-defensiva {
+    background: rgba(123, 104, 238, 0.2) !important;
+    color: var(--color-primary) !important;
+}
+
+/* Override para scraping badges */
+.scraping-badge .badge-value {
+    color: var(--color-gold) !important;
+}
+
+.scraping-badge .badge-label {
+    color: var(--color-gray-600) !important;
+}
+
+/* Garantir que elementos inline respeitam o tema */
+strong, b {
+    color: var(--color-gold) !important;
+}
+
+em, i {
+    color: var(--color-gray-700) !important;
+}
+
+/* Override para qualquer elemento que ainda esteja branco */
+[style*="background: white"],
+[style*="background-color: white"],
+[style*="background: #fff"],
+[style*="background-color: #fff"] {
+    background: rgba(22, 33, 62, 0.9) !important;
+} 

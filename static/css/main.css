@@ -1,0 +1,436 @@
+/* Rematch Analyzer - Main Styles - Tema Dark Gaming */
+
+:root {
+    /* Paleta Dark Elegante */
+    --color-gray-100: #1a1a2e;     /* Roxo muito escuro */
+    --color-gray-200: #16213e;     /* Azul muito escuro */
+    --color-gray-300: #0f3460;     /* Azul escuro */
+    --color-gray-400: #533483;     /* Roxo médio */
+    --color-gray-500: #7b68ee;     /* Roxo claro */
+    --color-gray-600: #9d8df1;     /* Roxo suave */
+    --color-gray-700: #c9c3f0;     /* Lavanda */
+    --color-gray-800: #e6e6fa;     /* Lavanda claro */
+    --color-gray-900: #ffffff;     /* Branco puro */
+    
+    /* Sombras dark com brilho dourado */
+    --shadow-default: 0 4px 20px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(218, 165, 32, 0.1);
+    --shadow-active: 0 8px 40px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(218, 165, 32, 0.2);
+    
+    /* Cores do tema Dark Gaming */
+    --color-primary: #7b68ee;      /* Roxo vibrante */
+    --color-primary-light: #9d8df1; /* Roxo claro */
+    --color-success: #00ff88;      /* Verde neon */
+    --color-warning: #daa520;      /* Dourado */
+    --color-danger: #ff4757;       /* Vermelho neon */
+    
+    /* Cores extras dark theme */
+    --color-dark-bg: #0d1117;      /* Preto azulado */
+    --color-dark-surface: #161b22; /* Cinza escuro */
+    --color-purple-deep: #4c1d95;  /* Roxo profundo */
+    --color-gold: #ffd700;         /* Dourado brilhante */
+    --color-gold-dark: #daa520;    /* Dourado escuro */
+    --color-field-green: #00ff88;  /* Verde neon */
+    --color-sky-blue: #7b68ee;     /* Roxo como sky blue */
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    background: var(--color-dark-bg);
+    color: var(--color-gray-800);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* Background Dark Gaming com Imagem do Rematch */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(45deg, rgba(123, 104, 238, 0.05), rgba(76, 29, 149, 0.1)),
+        url('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2138720/f27b62620af398202c73f3f4990a0e3be34bba4b/ss_f27b62620af398202c73f3f4990a0e3be34bba4b.600x338.jpg?t=1750327757');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    opacity: 0.6;
+    z-index: -2;
+    animation: backgroundMove 60s ease-in-out infinite;
+    filter: blur(0.3px) brightness(0.8) saturate(1.6);
+}
+
+@keyframes backgroundMove {
+    0%, 100% { 
+        transform: scale(1) rotate(0deg);
+        background-position: center center;
+        opacity: 0.6;
+    }
+    25% { 
+        transform: scale(1.02) rotate(0.2deg);
+        background-position: left center;
+        opacity: 0.5;
+    }
+    50% { 
+        transform: scale(1.03) rotate(0deg);
+        background-position: center top;
+        opacity: 0.7;
+    }
+    75% { 
+        transform: scale(1.01) rotate(-0.2deg);
+        background-position: right center;
+        opacity: 0.6;
+    }
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(26, 26, 46, 0.4) 0%,      /* Roxo muito escuro - reduzido */
+        rgba(22, 33, 62, 0.5) 25%,      /* Azul muito escuro - reduzido */
+        rgba(13, 17, 23, 0.6) 50%,     /* Preto azulado - reduzido */
+        rgba(26, 26, 46, 0.5) 75%,      /* Roxo muito escuro - reduzido */
+        rgba(13, 17, 23, 0.7) 100%     /* Preto azulado - reduzido */
+    );
+    z-index: -1;
+}
+
+/* Common Components com tema dark gaming */
+.btn {
+    padding: 0.875rem 1.75rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.975rem;
+    letter-spacing: 0.025em;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-purple-deep) 100%);
+    color: white;
+    border: 2px solid var(--color-primary);
+    box-shadow: 
+        var(--shadow-default),
+        0 0 15px rgba(123, 104, 238, 0.4);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--color-gold-dark) 0%, var(--color-primary) 100%);
+    border-color: var(--color-gold);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 
+        var(--shadow-active),
+        0 0 25px rgba(218, 165, 32, 0.6);
+}
+
+.btn-outline {
+    background: rgba(22, 33, 62, 0.8);
+    color: var(--color-gray-700);
+    border: 2px solid var(--color-gray-400);
+    box-shadow: var(--shadow-default);
+}
+
+.btn-outline:hover {
+    background: var(--color-gray-400);
+    color: var(--color-dark-bg);
+    transform: translateY(-2px);
+    box-shadow: 
+        var(--shadow-active),
+        0 0 20px rgba(83, 52, 131, 0.4);
+    border-color: var(--color-gray-400);
+}
+
+/* Form Elements com tema dark */
+.form-control,
+.form-select {
+    border: 2px solid rgba(123, 104, 238, 0.4);
+    border-radius: 10px;
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: rgba(22, 33, 62, 0.8);
+    color: var(--color-gray-800);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--color-gold);
+    box-shadow: 
+        0 0 0 3px rgba(255, 215, 0, 0.3),
+        0 0 15px rgba(218, 165, 32, 0.2);
+    outline: none;
+    background: rgba(22, 33, 62, 0.95);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--color-gray-800);
+    margin-bottom: 0.75rem;
+    font-size: 0.975rem;
+}
+
+/* Cards com tema dark elegante */
+.card {
+    background: rgba(22, 33, 62, 0.9);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 
+        var(--shadow-default),
+        0 0 20px rgba(123, 104, 238, 0.2);
+    border: 1px solid rgba(123, 104, 238, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+        var(--color-gold) 0%, 
+        var(--color-primary) 50%, 
+        var(--color-gold) 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.card:hover::before {
+    transform: scaleX(1);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+        var(--shadow-active),
+        0 0 30px rgba(123, 104, 238, 0.3),
+        0 0 50px rgba(218, 165, 32, 0.2);
+    border-color: var(--color-gold);
+}
+
+/* Loading Overlay com tema dark */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(8px);
+    display: none;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-content {
+    text-align: center;
+    background: rgba(22, 33, 62, 0.95);
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    box-shadow: 
+        var(--shadow-active),
+        0 0 30px rgba(123, 104, 238, 0.3);
+    max-width: 400px;
+    width: 90%;
+    border: 2px solid rgba(123, 104, 238, 0.3);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.loading-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        var(--color-gold) 0%, 
+        var(--color-primary) 50%, 
+        var(--color-gold) 100%);
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(123, 104, 238, 0.3);
+    border-top: 3px solid var(--color-gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1.5rem;
+    position: relative;
+}
+
+.loading-spinner::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border: 2px solid transparent;
+    border-top: 2px solid var(--color-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite reverse;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Hero Section com tema dark gaming */
+.hero-section {
+    background: linear-gradient(135deg, 
+        rgba(26, 26, 46, 0.8) 0%, 
+        rgba(22, 33, 62, 0.8) 50%,
+        rgba(13, 17, 23, 0.8) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dark-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none"/><path d="M0 20h20v-2H0zM0 0h20v2H0z" fill="rgba(123,104,238,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23dark-pattern)"/></svg>') repeat;
+    opacity: 0.3;
+    z-index: -1;
+}
+
+/* Action Cards com tema dark gaming */
+.action-card {
+    background: rgba(22, 33, 62, 0.9);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    box-shadow: 
+        var(--shadow-default),
+        0 0 20px rgba(123, 104, 238, 0.2);
+    border: 1px solid rgba(123, 104, 238, 0.3);
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-gold), var(--color-primary));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.action-card:hover::before {
+    transform: scaleX(1);
+}
+
+.action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+        var(--shadow-active),
+        0 0 30px rgba(123, 104, 238, 0.3),
+        0 0 50px rgba(218, 165, 32, 0.2);
+    border-color: var(--color-gold);
+}
+
+.card-icon {
+    font-size: 3rem;
+    color: var(--color-gold);
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+}
+
+/* Badge Pills com tema dark gaming */
+.badge-pill {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-gold-dark) 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: 
+        var(--shadow-default),
+        0 0 10px rgba(123, 104, 238, 0.3);
+    border: 1px solid rgba(218, 165, 32, 0.4);
+    transition: all 0.3s ease;
+}
+
+.badge-pill:hover {
+    transform: translateY(-1px) scale(1.05);
+    box-shadow: 
+        var(--shadow-active),
+        0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .btn {
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+    
+    .card {
+        padding: 1.5rem;
+    }
+    
+    .action-card {
+        padding: 2rem 1.5rem;
+    }
+} 
