@@ -34,12 +34,17 @@ O servidor será iniciado em `http://127.0.0.1:5000` (ou na porta configurada pe
 
 ## ⚙️ Configuração
 
-Atualmente, o projeto utiliza chaves de API embutidas diretamente no código (como a do `google.generativeai`). Para um ambiente de produção seguro, recomenda-se configurar essas chaves através de variáveis de ambiente.
+As chaves de API são lidas de variáveis de ambiente (com `python-dotenv`) e não ficam no código. Crie um arquivo `.env` na raiz do projeto (ele já está no `.gitignore`):
 
-| Variável Necessária (Sugestão) | Descrição |
+```env
+GEMINI_API_KEY=sua_chave_aqui
+FLASK_SECRET_KEY=uma_chave_secreta
+```
+
+| Variável | Descrição |
 |----------|-------------|
-| `GEMINI_API_KEY` | Chave de API para o Google Gemini |
-| `FLASK_SECRET_KEY` | Chave secreta para sessões do Flask |
+| `GEMINI_API_KEY` | Chave de API do Google Gemini, usada nas análises com IA |
+| `FLASK_SECRET_KEY` | Chave secreta para as sessões do Flask |
 
 ## 🛠️ Tecnologias Utilizadas
 
